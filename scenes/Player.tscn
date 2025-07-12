@@ -1,0 +1,86 @@
+[gd_scene load_steps=13 format=3 uid="uid://cxs7rtrtk8rcb"]
+
+[ext_resource type="Script" uid="uid://qflb8kngdirv" path="res://scripts/player.gd" id="1_v6fml"]
+[ext_resource type="Texture2D" uid="uid://cwq25ks1cuspo" path="res://assets/sprites/player_run.png" id="2_v6fml"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3li8b"]
+atlas = ExtResource("2_v6fml")
+region = Rect2(0, 0, 21, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mdl7e"]
+atlas = ExtResource("2_v6fml")
+region = Rect2(21, 0, 21, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qu4a1"]
+atlas = ExtResource("2_v6fml")
+region = Rect2(42, 0, 21, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_70d11"]
+atlas = ExtResource("2_v6fml")
+region = Rect2(63, 0, 21, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cw2d6"]
+atlas = ExtResource("2_v6fml")
+region = Rect2(84, 0, 21, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_khinc"]
+atlas = ExtResource("2_v6fml")
+region = Rect2(105, 0, 21, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bruh7"]
+atlas = ExtResource("2_v6fml")
+region = Rect2(126, 0, 21, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6eyey"]
+atlas = ExtResource("2_v6fml")
+region = Rect2(147, 0, 21, 33)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_d3wef"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3li8b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mdl7e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qu4a1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_70d11")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cw2d6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_khinc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bruh7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6eyey")
+}],
+"loop": true,
+"name": &"default",
+"speed": 12.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v6fml"]
+size = Vector2(81, 183)
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_v6fml")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(4, 5.399)
+sprite_frames = SubResource("SpriteFrames_d3wef")
+autoplay = "default"
+frame_progress = 0.7688418
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 0.5)
+scale = Vector2(1.1111112, 1)
+shape = SubResource("RectangleShape2D_v6fml")
