@@ -14,13 +14,22 @@ scale = Vector2(1.2199999, 0.58)
 texture = ExtResource("5_n34uq")
 
 [node name="Note" parent="." instance=ExtResource("2_76388")]
-position = Vector2(1854, 151)
+position = Vector2(2500, 153)
 
 [node name="Note2" parent="." instance=ExtResource("2_76388")]
-position = Vector2(2218, 349)
+position = Vector2(2781, 349)
 
 [node name="Note3" parent="." instance=ExtResource("2_76388")]
-position = Vector2(2579, 351)
+position = Vector2(3104, 351)
 
 [node name="Note4" parent="." instance=ExtResource("2_76388")]
-position = Vector2(3184, 252)
+position = Vector2(3694, 252)
+
+[node name="Note5" parent="." instance=ExtResource("2_76388")]
+position = Vector2(2277, 252)
+
+[node name="Note6" parent="." instance=ExtResource("2_76388")]
+position = Vector2(1996, 349)
+
+[node name="Note7" parent="." instance=ExtResource("2_76388")]
+position = Vector2(1638, 447)
