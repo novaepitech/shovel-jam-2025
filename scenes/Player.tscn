@@ -72,13 +72,15 @@ size = Vector2(81, 183)
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_v6fml")
+note_jump_range = 500.0
+note_jump_apex_height = 315.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 scale = Vector2(4, 5.399)
 sprite_frames = SubResource("SpriteFrames_d3wef")
 autoplay = "default"
-frame_progress = 0.7688418
+frame_progress = 0.45217958
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.5, 0.5)

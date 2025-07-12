@@ -3,17 +3,20 @@
 [ext_resource type="Texture2D" uid="uid://dbborrwh16g6o" path="res://assets/note.png" id="2_tqwf5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ku001"]
-size = Vector2(66, 74)
+size = Vector2(158, 21)
 
-[node name="Note" type="Area2D"]
+[node name="Note" type="Node2D" groups=["notes"]]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0, 0, 0, 1)
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("2_tqwf5")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(59, -105)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
 shape = SubResource("RectangleShape2D_ku001")
 
 [node name="FallPoint" type="Marker2D" parent="."]
-position = Vector2(18, -148)
+position = Vector2(-6, -148)
