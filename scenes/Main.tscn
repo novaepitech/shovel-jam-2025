@@ -1,9 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://2lqfsharfeg4"]
+[gd_scene load_steps=6 format=3 uid="uid://2lqfsharfeg4"]
 
 [ext_resource type="Script" uid="uid://kjuaeqp622km" path="res://scripts/main.gd" id="1_elqb8"]
-[ext_resource type="PackedScene" uid="uid://dsh5yd6w0gkr6" path="res://scenes/Note.tscn" id="2_rarhs"]
 [ext_resource type="PackedScene" uid="uid://cxs7rtrtk8rcb" path="res://scenes/Player.tscn" id="2_rvslj"]
-[ext_resource type="Texture2D" uid="uid://mhvcccnis7bn" path="res://assets/lines.png" id="3_0bbpv"]
+[ext_resource type="PackedScene" uid="uid://cbsa0t0rf527c" path="res://scenes/Level1.tscn" id="4_rarhs"]
 [ext_resource type="Texture2D" uid="uid://beqiequ522omj" path="res://assets/background.png" id="4_vcsgt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vcsgt"]
@@ -11,9 +10,9 @@ size = Vector2(1568, 489)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_elqb8")
-note_scene = ExtResource("2_rarhs")
 
 [node name="Player" parent="." instance=ExtResource("2_rvslj")]
+z_index = 1
 position = Vector2(302, 402)
 
 [node name="NoteSpawnTimer" type="Timer" parent="."]
@@ -24,20 +23,15 @@ autostart = true
 position = Vector2(1444, 185)
 
 [node name="Background" type="Sprite2D" parent="."]
-show_behind_parent = true
 position = Vector2(575.25, 325)
 scale = Vector2(1147.5, 642)
 texture = ExtResource("4_vcsgt")
 
-[node name="Lines" type="Sprite2D" parent="."]
-modulate = Color(0.44, 0.44, 0.44, 1)
-show_behind_parent = true
-position = Vector2(864, 391.00003)
-scale = Vector2(0.58, 0.58)
-texture = ExtResource("3_0bbpv")
-
 [node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(596, 836)
+position = Vector2(596, 889)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
 shape = SubResource("RectangleShape2D_vcsgt")
+
+[node name="Level1" parent="." instance=ExtResource("4_rarhs")]
+position = Vector2(-41, 51)

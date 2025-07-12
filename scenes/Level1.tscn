@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://cbsa0t0rf527c"]
+
+[ext_resource type="PackedScene" uid="uid://dsh5yd6w0gkr6" path="res://scenes/Note.tscn" id="2_76388"]
+[ext_resource type="Texture2D" uid="uid://mhvcccnis7bn" path="res://assets/lines.png" id="5_n34uq"]
+
+[node name="Level1" type="Node2D"]
+
+[node name="Lines" type="Sprite2D" parent="."]
+modulate = Color(0.44, 0.44, 0.44, 1)
+show_behind_parent = true
+visibility_layer = 2
+position = Vector2(2280.0002, 391.00003)
+scale = Vector2(1.2199999, 0.58)
+texture = ExtResource("5_n34uq")
+
+[node name="Note" parent="." instance=ExtResource("2_76388")]
+position = Vector2(1854, 151)
+
+[node name="Note2" parent="." instance=ExtResource("2_76388")]
+position = Vector2(2218, 349)
+
+[node name="Note3" parent="." instance=ExtResource("2_76388")]
+position = Vector2(2579, 351)
+
+[node name="Note4" parent="." instance=ExtResource("2_76388")]
+position = Vector2(3184, 252)
