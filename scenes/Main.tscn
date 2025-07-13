@@ -15,7 +15,7 @@ script = ExtResource("1_elqb8")
 z_index = 1
 position = Vector2(326, 565)
 jump_height = 160.0
-jump_time_to_peak = 0.40000000000873115
+jump_time_to_peak = 0.4000000000087311
 jump_time_to_descent = 0.3000000000029104
 
 [node name="NoteSpawnTimer" type="Timer" parent="."]
