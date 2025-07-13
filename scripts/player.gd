@@ -1,38 +1,59 @@
 extends CharacterBody2D
 
-@export var jump_velocity = -900.0
-@export var rise_gravity_multiplier = 1.8
-@export var fall_gravity_multiplier = 4.2
+@export var jump_height: float
+@export var jump_time_to_peak: float
+@export var jump_time_to_descent: float
 
-var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
-var last_platform = null  # Track the last platform we were on
+var jump_velocity: float
+var jump_gravity: float
+var fall_gravity: float
+
+# Variable to store a reference to the body we are standing on
+var current_floor_collider = null
+
+func _ready():
+    jump_velocity = ((2.0 * jump_height) / jump_time_to_peak) * -1.0
+    jump_gravity = ((-2.0 * jump_height) / (jump_time_to_peak * jump_time_to_peak)) * -1.0
+    fall_gravity = ((-2.0 * jump_height) / (jump_time_to_descent * jump_time_to_descent)) * -1.0
 
 func _physics_process(delta):
-    # Add the gravity with appropriate multiplier
-    if not is_on_floor():
-        if velocity.y > 0:  # When falling
-            velocity.y += gravity * fall_gravity_multiplier * delta
-        else:  # When rising
-            velocity.y += gravity * rise_gravity_multiplier * delta
-
-    # Handle Jump.
+    velocity.y += get_custom_gravity() * delta
+    
     if Input.is_action_just_pressed("jump") and is_on_floor():
-        velocity.y = jump_velocity
-
-        # Check if we're jumping off a note
-        if last_platform and last_platform.get_parent().is_in_group("notes"):
-            var note = last_platform.get_parent()
-            if note.has_method("on_player_jump"):
+        # Check if we have a valid reference to the floor from the previous frame
+        if current_floor_collider:
+            # The note script is on the parent of the collider (StaticBody2D)
+            var note = current_floor_collider.get_parent()
+            # Check if that parent is in the "notes" group and can be bumped
+            if note and note.is_in_group("notes"):
                 note.on_player_jump()
-
-    # Track current platform
-    if is_on_floor():
-        var collision = get_slide_collision(get_slide_collision_count() - 1) if get_slide_collision_count() > 0 else null
-        if collision:
-            last_platform = collision.get_collider()
-    else:
-        # Clear last platform when not on floor (to prevent multiple triggers)
-        if velocity.y < 0:  # Only clear when jumping up
-            last_platform = null
+                
+        jump()
 
     move_and_slide()
+
+    # After moving, update our reference to the current floor for the *next* frame.
+    # This is the reliable Godot 4 way to get the floor collider.
+    update_floor_collider_reference()
+
+
+func update_floor_collider_reference():
+    # Loop through all collisions that happened in the last move_and_slide() call
+    for i in range(get_slide_collision_count()):
+        var collision = get_slide_collision(i)
+        
+        # get_floor_normal() is a built-in helper that gives us the floor's normal vector.
+        # We check if the collision's normal matches it. This correctly identifies the floor.
+        if collision.get_normal().is_equal_approx(get_floor_normal()):
+            current_floor_collider = collision.get_collider()
+            return # Exit the loop once we've found the floor
+
+    # If no floor collision was found (e.g., we are in the air), clear the reference.
+    current_floor_collider = null
+
+
+func get_custom_gravity() -> float:
+    return jump_gravity if velocity.y < 0.0 else fall_gravity
+
+func jump():
+    velocity.y = jump_velocity

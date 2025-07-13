@@ -13,7 +13,10 @@ script = ExtResource("1_elqb8")
 
 [node name="Player" parent="." instance=ExtResource("2_rvslj")]
 z_index = 1
-position = Vector2(302, 402)
+position = Vector2(326, 565)
+jump_height = 160.0
+jump_time_to_peak = 0.40000000000873115
+jump_time_to_descent = 0.3000000000029104
 
 [node name="NoteSpawnTimer" type="Timer" parent="."]
 wait_time = 1.5
