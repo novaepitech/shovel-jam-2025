@@ -56,9 +56,14 @@ func _on_note_spawn_timer_timeout():
         # On ne place un silence que s'il a un temps, sinon on le saute.
         if node_to_spawn_data.type != NoteData.NoteType.SILENCE:
             var note_instance = note_scene.instantiate()
+            
+            world_container.add_child(note_instance)
+
+            # Set the note's type so it can change its sprite
+            note_instance.set_type(node_to_spawn_data.type)
+
             var new_x_pos = last_note_spawn_x + (current_scroll_speed * time_interval)
             note_instance.position = Vector2(new_x_pos, node_to_spawn_data.position.y)
-            world_container.add_child(note_instance)
             last_note_spawn_x = new_x_pos
     elif node_to_spawn_data is SpeedTrigger:
         # Un trigger ne prend pas de temps, il est placé à la même position

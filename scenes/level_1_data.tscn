@@ -13,22 +13,20 @@ type = 4
 [node name="Marker2D5" type="Marker2D" parent="."]
 position = Vector2(841, 83)
 script = ExtResource("1_7gloj")
-type = 4
 
 [node name="Marker2D2" type="Marker2D" parent="."]
 position = Vector2(219, 171)
 script = ExtResource("1_7gloj")
-type = 4
 
 [node name="Marker2D3" type="Marker2D" parent="."]
 position = Vector2(491, 138)
 script = ExtResource("1_7gloj")
-type = 4
+type = 2
 
 [node name="Marker2D4" type="Marker2D" parent="."]
 position = Vector2(566, 171)
 script = ExtResource("1_7gloj")
-type = 4
+type = 2
 
 [node name="Marker2D6" type="Marker2D" parent="."]
 position = Vector2(1098, 83)
@@ -43,27 +41,24 @@ type = 4
 [node name="Marker2D8" type="Marker2D" parent="."]
 position = Vector2(1244, 171)
 script = ExtResource("1_7gloj")
-type = 4
 
 [node name="Marker2D9" type="Marker2D" parent="."]
 position = Vector2(1516, 138)
 script = ExtResource("1_7gloj")
-type = 4
+type = 2
 
 [node name="Marker2D10" type="Marker2D" parent="."]
 position = Vector2(1591, 171)
 script = ExtResource("1_7gloj")
-type = 4
+type = 2
 
 [node name="Marker2D11" type="Marker2D" parent="."]
 position = Vector2(2098, 83)
 script = ExtResource("1_7gloj")
-type = 4
 
 [node name="Marker2D12" type="Marker2D" parent="."]
 position = Vector2(2866, 83)
 script = ExtResource("1_7gloj")
-type = 4
 
 [node name="Marker2D13" type="Marker2D" parent="."]
 position = Vector2(2244, 171)
@@ -73,7 +68,6 @@ type = 4
 [node name="Marker2D14" type="Marker2D" parent="."]
 position = Vector2(2516, 138)
 script = ExtResource("1_7gloj")
-type = 4
 
 [node name="Marker2D15" type="Marker2D" parent="."]
 position = Vector2(2591, 171)
