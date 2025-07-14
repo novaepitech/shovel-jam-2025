@@ -13,7 +13,7 @@ script = ExtResource("1_elqb8")
 
 [node name="Player" parent="." instance=ExtResource("2_rvslj")]
 z_index = 1
-position = Vector2(326, 565)
+position = Vector2(-186, 135)
 jump_height = 160.0
 jump_time_to_peak = 0.4000000000087311
 jump_time_to_descent = 0.3000000000029104
@@ -23,18 +23,24 @@ wait_time = 1.5
 autostart = true
 
 [node name="SpawnPoint" type="Node2D" parent="."]
-position = Vector2(1444, 185)
-
-[node name="Background" type="Sprite2D" parent="."]
-position = Vector2(575.25, 325)
-scale = Vector2(1147.5, 642)
-texture = ExtResource("4_vcsgt")
+position = Vector2(932, -245)
 
 [node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(596, 889)
+position = Vector2(84, 459)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
 shape = SubResource("RectangleShape2D_vcsgt")
 
 [node name="Level1" parent="." instance=ExtResource("4_rarhs")]
-position = Vector2(-41, 51)
+position = Vector2(-553, -379)
+
+[node name="Background" type="TextureRect" parent="."]
+z_index = -1
+offset_left = -978.0
+offset_top = -620.0
+offset_right = 4602.0
+offset_bottom = 3933.0
+texture = ExtResource("4_vcsgt")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.8, 0.8)
