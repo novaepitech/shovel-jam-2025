@@ -1,6 +1,5 @@
-[gd_scene load_steps=3 format=3 uid="uid://cbsa0t0rf527c"]
+[gd_scene load_steps=2 format=3 uid="uid://cbsa0t0rf527c"]
 
-[ext_resource type="PackedScene" uid="uid://dsh5yd6w0gkr6" path="res://scenes/Note.tscn" id="2_76388"]
 [ext_resource type="Texture2D" uid="uid://mhvcccnis7bn" path="res://assets/lines.png" id="5_n34uq"]
 
 [node name="Level1" type="Node2D"]
@@ -12,24 +11,3 @@ visibility_layer = 2
 position = Vector2(2280.0002, 391.00003)
 scale = Vector2(1.2199999, 0.58)
 texture = ExtResource("5_n34uq")
-
-[node name="Note" parent="." instance=ExtResource("2_76388")]
-position = Vector2(2873, 153)
-
-[node name="Note2" parent="." instance=ExtResource("2_76388")]
-position = Vector2(3267, 349)
-
-[node name="Note3" parent="." instance=ExtResource("2_76388")]
-position = Vector2(3763, 351)
-
-[node name="Note4" parent="." instance=ExtResource("2_76388")]
-position = Vector2(4245, 252)
-
-[node name="Note5" parent="." instance=ExtResource("2_76388")]
-position = Vector2(2442, 252)
-
-[node name="Note6" parent="." instance=ExtResource("2_76388")]
-position = Vector2(2054, 349)
-
-[node name="Note7" parent="." instance=ExtResource("2_76388")]
-position = Vector2(1638, 447)

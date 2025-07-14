@@ -7,6 +7,7 @@
 size = Vector2(86, 23.5)
 
 [node name="Note" type="Node2D" groups=["notes"]]
+z_index = 1
 script = ExtResource("1_tqwf5")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -21,3 +22,7 @@ position = Vector2(-65, 45)
 position = Vector2(4, 0)
 shape = SubResource("RectangleShape2D_ku001")
 one_way_collision = true
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

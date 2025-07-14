@@ -31,3 +31,7 @@ func bump():
 # Call this when player successfully jumps off the note
 func on_player_jump():
     bump()
+
+
+#func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
+    #queue_free()

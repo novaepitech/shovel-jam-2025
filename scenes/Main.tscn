@@ -1,18 +1,24 @@
-[gd_scene load_steps=6 format=3 uid="uid://2lqfsharfeg4"]
+[gd_scene load_steps=8 format=3 uid="uid://2lqfsharfeg4"]
 
 [ext_resource type="Script" uid="uid://kjuaeqp622km" path="res://scripts/main.gd" id="1_elqb8"]
+[ext_resource type="PackedScene" uid="uid://dsh5yd6w0gkr6" path="res://scenes/Note.tscn" id="2_rarhs"]
 [ext_resource type="PackedScene" uid="uid://cxs7rtrtk8rcb" path="res://scenes/Player.tscn" id="2_rvslj"]
-[ext_resource type="PackedScene" uid="uid://cbsa0t0rf527c" path="res://scenes/Level1.tscn" id="4_rarhs"]
+[ext_resource type="PackedScene" uid="uid://ulc1c25ef1wh" path="res://scenes/level_1_data.tscn" id="3_vcsgt"]
 [ext_resource type="Texture2D" uid="uid://beqiequ522omj" path="res://assets/background.png" id="4_vcsgt"]
+[ext_resource type="Texture2D" uid="uid://mhvcccnis7bn" path="res://assets/lines.png" id="6_c01mt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vcsgt"]
 size = Vector2(1568, 489)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_elqb8")
+note_scene = ExtResource("2_rarhs")
+level_data_scene = ExtResource("3_vcsgt")
+bpm = 60.0
+initial_scroll_speed = 1000.0
 
 [node name="Player" parent="." instance=ExtResource("2_rvslj")]
-z_index = 1
+z_index = 2
 position = Vector2(-186, 135)
 jump_height = 160.0
 jump_time_to_peak = 0.4000000000087311
@@ -20,10 +26,9 @@ jump_time_to_descent = 0.3000000000029104
 
 [node name="NoteSpawnTimer" type="Timer" parent="."]
 wait_time = 1.5
-autostart = true
 
-[node name="SpawnPoint" type="Node2D" parent="."]
-position = Vector2(932, -245)
+[node name="SpawnPoint" type="Marker2D" parent="."]
+position = Vector2(1992, -245)
 
 [node name="Floor" type="StaticBody2D" parent="."]
 position = Vector2(84, 459)
@@ -31,16 +36,25 @@ position = Vector2(84, 459)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
 shape = SubResource("RectangleShape2D_vcsgt")
 
-[node name="Level1" parent="." instance=ExtResource("4_rarhs")]
-position = Vector2(-553, -379)
-
 [node name="Background" type="TextureRect" parent="."]
 z_index = -1
-offset_left = -978.0
-offset_top = -620.0
-offset_right = 4602.0
-offset_bottom = 3933.0
+offset_left = -1251.0
+offset_top = -743.0
+offset_right = 4329.0
+offset_bottom = 3810.0
 texture = ExtResource("4_vcsgt")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(0.8, 0.8)
+
+[node name="WorldContainer" type="Node2D" parent="."]
+
+[node name="StaffLines" type="TextureRect" parent="WorldContainer"]
+modulate = Color(0, 0, 0, 1)
+offset_left = -1080.0
+offset_top = -657.0
+offset_right = 2760.0
+offset_bottom = 1389.0
+scale = Vector2(1.3776877, 0.6503316)
+texture = ExtResource("6_c01mt")
+stretch_mode = 1

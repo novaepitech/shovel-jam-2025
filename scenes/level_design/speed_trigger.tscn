@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://bhv6fp7brk3ia"]
+
+[ext_resource type="Script" uid="uid://m66ppduy1jmy" path="res://scripts/level_design/speed_trigger.gd" id="1_c45jx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r3dmu"]
+size = Vector2(18, 782)
+
+[node name="SpeedTrigger" type="Area2D" groups=["triggers"]]
+script = ExtResource("1_c45jx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1, 381)
+shape = SubResource("RectangleShape2D_r3dmu")
