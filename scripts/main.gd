@@ -62,8 +62,14 @@ func _on_note_spawn_timer_timeout():
             # Set the note's type so it can change its sprite
             note_instance.set_type(node_to_spawn_data.type)
 
+            # Calculate the note's Y position using our new MusicTheory singleton
+            var new_y_pos = MusicTheory.get_y_for_pitch(node_to_spawn_data.pitch)
+
+            # Calculate the note's X position based on timing, as before
             var new_x_pos = last_note_spawn_x + (current_scroll_speed * time_interval)
-            note_instance.position = Vector2(new_x_pos, node_to_spawn_data.position.y)
+
+            # Set the final position
+            note_instance.position = Vector2(new_x_pos, new_y_pos)
             last_note_spawn_x = new_x_pos
     elif node_to_spawn_data is SpeedTrigger:
         # Un trigger ne prend pas de temps, il est placé à la même position

@@ -28,7 +28,7 @@ jump_time_to_descent = 0.3000000000029104
 wait_time = 1.5
 
 [node name="SpawnPoint" type="Marker2D" parent="."]
-position = Vector2(1992, -245)
+position = Vector2(1070, -245)
 
 [node name="Floor" type="StaticBody2D" parent="."]
 position = Vector2(84, 459)
