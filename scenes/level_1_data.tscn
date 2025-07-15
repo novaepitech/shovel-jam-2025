@@ -14,11 +14,13 @@ pitch = 0
 position = Vector2(181, 156)
 script = ExtResource("1_7gloj")
 pitch = 1
+inverted = true
 
 [node name="Marker2D3" type="Marker2D" parent="."]
 position = Vector2(288, 100)
 script = ExtResource("1_7gloj")
 pitch = 2
+inverted = true
 
 [node name="Marker2D4" type="Marker2D" parent="."]
 position = Vector2(372, 44)
@@ -28,6 +30,7 @@ pitch = 3
 [node name="Marker2D5" type="Marker2D" parent="."]
 position = Vector2(463, -12)
 script = ExtResource("1_7gloj")
+inverted = true
 
 [node name="Marker2D6" type="Marker2D" parent="."]
 position = Vector2(596, -68)

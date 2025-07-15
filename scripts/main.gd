@@ -3,127 +3,106 @@ extends Node2D
 
 @export var note_scene: PackedScene
 @export var level_data_scene: PackedScene
-@export var bpm: float = 120.0 
+@export var bpm: float = 120.0
 @export var initial_scroll_speed: float = 400.0
 
-@onready var note_spawn_timer: Timer = $NoteSpawnTimer
-# NOUVEAU : Référence vers notre conteneur
+# The note spawning Timer is no longer needed.
 @onready var world_container: Node2D = $WorldContainer
 @onready var staff_lines: TextureRect = $WorldContainer/StaffLines
 
 var beat_duration: float
 var current_scroll_speed: float
-var note_queue: Array[Node] = []
-var note_queue_index: int = 0
-var last_note_spawn_x: float = 0.0
+
 
 func _ready() -> void:
-    # Ceci va maintenant fonctionner car SignalManager est un Node valide.
-    SignalManager.speed_change_requested.connect(_on_speed_change_requested)
-    
-    beat_duration = 60.0 / bpm
-    current_scroll_speed = initial_scroll_speed
-    
-    note_spawn_timer.timeout.connect(_on_note_spawn_timer_timeout)
+	SignalManager.speed_change_requested.connect(_on_speed_change_requested)
 
-    load_and_prepare_level()
-    
-    # Le point de départ pour le spawn est le bord droit de l'écran.
-    last_note_spawn_x = get_viewport().get_visible_rect().size.x
-    
-    _on_note_spawn_timer_timeout()
+	beat_duration = 60.0 / bpm
+	current_scroll_speed = initial_scroll_speed
+
+	# We directly call our new function that builds the entire level at once.
+	build_level_layout()
+
 
 func _process(delta: float) -> void:
-    # Beaucoup plus performant ! On ne déplace qu'un seul nœud.
-    world_container.position.x -= current_scroll_speed * delta
+	# The _process function is now very simple, it only scrolls the world.
+	world_container.position.x -= current_scroll_speed * delta
+
 
 func _on_speed_change_requested(new_speed: float):
-    print("Vitesse changée de %f à %f" % [current_scroll_speed, new_speed])
-    current_scroll_speed = new_speed
+	print("Speed changed from %f to %f" % [current_scroll_speed, new_speed])
+	current_scroll_speed = new_speed
 
-func _on_note_spawn_timer_timeout():
-    if note_queue_index >= note_queue.size():
-        note_spawn_timer.stop()
-        print("Niveau terminé.")
-        return
-        
-    var node_to_spawn_data = note_queue[note_queue_index]
-    
-    var time_interval = 0.0
-    
-    if node_to_spawn_data is NoteData:
-        time_interval = calculate_wait_time_for_note(node_to_spawn_data.type)
-        # On ne place un silence que s'il a un temps, sinon on le saute.
-        if node_to_spawn_data.type != NoteData.NoteType.SILENCE:
-            var note_instance = note_scene.instantiate()
-            
-            world_container.add_child(note_instance)
 
-            # Set the note's type so it can change its sprite
-            note_instance.set_type(node_to_spawn_data.type)
+# The _on_note_spawn_timer_timeout function is completely removed as there is no timer anymore.
 
-            # Calculate the note's Y position using our new MusicTheory singleton
-            var new_y_pos = MusicTheory.get_y_for_pitch(node_to_spawn_data.pitch)
+# This single function replaces the old logic.
+# It pre-calculates and places all level objects at once.
+func build_level_layout():
+	var level_data_node = level_data_scene.instantiate()
+	var all_nodes = level_data_node.get_children()
 
-            # Calculate the note's X position based on timing, as before
-            var new_x_pos = last_note_spawn_x + (current_scroll_speed * time_interval)
+	# Sorting nodes by their X position in the editor is crucial for processing order.
+	all_nodes.sort_custom(func(a, b): return a.position.x < b.position.x)
 
-            # Set the final position
-            note_instance.position = Vector2(new_x_pos, new_y_pos)
-            last_note_spawn_x = new_x_pos
-    elif node_to_spawn_data is SpeedTrigger:
-        # Un trigger ne prend pas de temps, il est placé à la même position
-        # que la note précédente ou suivante. On peut le placer avec la note précédente.
-        time_interval = 0.0 # On le fait apparaître en même temps que la note précédente.
-        node_to_spawn_data.get_parent().remove_child(node_to_spawn_data)
-        node_to_spawn_data.position = Vector2(last_note_spawn_x, -get_viewport().get_visible_rect().size.y / 2)
-        world_container.add_child(node_to_spawn_data)
-    
-    note_queue_index += 1
-    
-    # Programme le prochain événement
-    if time_interval > 0:
-        note_spawn_timer.wait_time = time_interval
-        note_spawn_timer.start()
-    else:
-        # Si l'intervalle est de 0 (comme pour un trigger), on déclenche
-        # immédiatement le prochain tour pour ne pas attendre.
-        _on_note_spawn_timer_timeout()
+	# --- Variables for our level construction simulation ---
+	# Starts just to the right of the visible screen
+	var last_spawn_x: float = get_viewport().get_visible_rect().size.x
+	# "Simulated" speed that will change along the way
+	var temp_scroll_speed: float = initial_scroll_speed
 
-func load_and_prepare_level():
-    var level_data_node = level_data_scene.instantiate()
-    var all_nodes = level_data_node.get_children()
-    
-    all_nodes.sort_custom(func(a, b): return a.position.x < b.position.x)
-    note_queue = all_nodes
+	# Iterate through each element defined in the level data scene
+	for node_data in all_nodes:
+		# CASE 1: The element is a note
+		if node_data is NoteData:
+			var note_instance = note_scene.instantiate()
 
-    # --- NOUVELLE LOGIQUE ---
-    # Après avoir chargé le niveau, on le "construit" une première fois en mémoire
-    # pour calculer sa longueur totale sans encore rien afficher.
-    var total_level_width: float = 0.0
-    var temp_scroll_speed = initial_scroll_speed
+			note_instance.note_type = node_data.type
+			note_instance.is_inverted = node_data.inverted
 
-    # On simule le placement de chaque note pour trouver la position de la dernière.
-    for node_data in note_queue:
-        if node_data is NoteData:
-            var time_interval = calculate_wait_time_for_note(node_data.type)
-            total_level_width += temp_scroll_speed * time_interval
-        elif node_data is SpeedTrigger:
-            # Si on rencontre un trigger, on met à jour la vitesse pour les calculs suivants.
-            temp_scroll_speed = node_data.new_speed
-    
-    # On ajoute une marge à la fin pour que ça ne se coupe pas brutalement.
-    total_level_width += get_viewport().get_visible_rect().size.x
+			# Calculates the time this note represents
+			var time_interval = calculate_wait_time_for_note(node_data.type)
+			# Calculates the distance to add based on the CURRENT simulation speed
+			var distance_to_add = temp_scroll_speed * time_interval
 
-    # Maintenant, on applique cette largeur à notre TextureRect.
-    staff_lines.size.x = total_level_width
-    print("Niveau préparé. Longueur totale des lignes de partition : ", total_level_width)
+			# Calculates the final X position of the note
+			var new_x_pos = last_spawn_x + distance_to_add
+			var new_y_pos = MusicTheory.get_y_for_pitch(node_data.pitch)
+
+			note_instance.position = Vector2(new_x_pos, new_y_pos)
+			world_container.add_child(note_instance)
+
+			# Updates the X position for the next object
+			last_spawn_x = new_x_pos
+
+		# CASE 2: The element is a speed trigger
+		elif node_data is SpeedTrigger:
+			# We need to move the trigger from the data scene to our game world
+			node_data.get_parent().remove_child(node_data)
+			world_container.add_child(node_data)
+
+			# Place it at the current X position, without adding distance
+			node_data.position.x = last_spawn_x
+			# It can be vertically centered for better visibility
+			node_data.position.y = 0
+
+			# CRUCIAL UPDATE: we change the speed for the next calculations!
+			temp_scroll_speed = node_data.new_speed
+			print("Simulated speed change to ", temp_scroll_speed, " at X position: ", last_spawn_x)
+
+	# Update the size of the staff lines to cover the entire level
+	staff_lines.size.x = last_spawn_x + get_viewport().get_visible_rect().size.x
+	print("Level built. Total length of staff lines: ", staff_lines.size.x)
+
+	# Le noeud de données et ses enfants (les modèles NoteData) ne sont plus nécessaires
+	level_data_node.queue_free()
+
 
 func calculate_wait_time_for_note(note_type: NoteData.NoteType) -> float:
-    match note_type:
-        NoteData.NoteType.CROCHE: return beat_duration
-        NoteData.NoteType.DOUBLE: return beat_duration / 2.0
-        NoteData.NoteType.TRIOLET: return beat_duration / 3.0
-        NoteData.NoteType.NOIRE: return beat_duration * 2.0
-        NoteData.NoteType.SILENCE: return beat_duration
-    return beat_duration
+	match note_type:
+		NoteData.NoteType.CROCHE: return beat_duration
+		NoteData.NoteType.DOUBLE: return beat_duration / 2.0
+		NoteData.NoteType.TRIOLET: return beat_duration / 3.0
+		NoteData.NoteType.NOIRE: return beat_duration * 2.0
+		NoteData.NoteType.SILENCE: return beat_duration
+	return beat_duration

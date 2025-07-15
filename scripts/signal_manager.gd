@@ -1,7 +1,7 @@
 # res://scripts/SignalManager.gd
-# Ce script n'a pas besoin d'hériter de Node.
-# C'est juste un conteneur pour nos signaux globaux.
+# This script does not need to inherit from Node.
+# It's just a container for our global signals.
 extends Node
 
-# On déclare le signal. Il pourra transporter une valeur (la nouvelle vitesse).
+# We declare the signal. It can carry a value (the new speed).
 signal speed_change_requested(new_speed: float)
