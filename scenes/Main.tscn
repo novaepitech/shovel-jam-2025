@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://2lqfsharfeg4"]
+[gd_scene load_steps=9 format=3 uid="uid://2lqfsharfeg4"]
 
 [ext_resource type="Script" uid="uid://kjuaeqp622km" path="res://scripts/main.gd" id="1_elqb8"]
 [ext_resource type="PackedScene" uid="uid://dsh5yd6w0gkr6" path="res://scenes/Note.tscn" id="2_rarhs"]
 [ext_resource type="PackedScene" uid="uid://cxs7rtrtk8rcb" path="res://scenes/Player.tscn" id="2_rvslj"]
+[ext_resource type="PackedScene" uid="uid://bmpxr5r1neoxk" path="res://scenes/beam.tscn" id="3_nxtc6"]
 [ext_resource type="PackedScene" uid="uid://ulc1c25ef1wh" path="res://scenes/level_1_data.tscn" id="3_vcsgt"]
 [ext_resource type="Texture2D" uid="uid://beqiequ522omj" path="res://assets/background.png" id="4_vcsgt"]
 [ext_resource type="Texture2D" uid="uid://mhvcccnis7bn" path="res://assets/lines.png" id="6_c01mt"]
@@ -13,8 +14,8 @@ size = Vector2(1568, 489)
 [node name="Main" type="Node2D"]
 script = ExtResource("1_elqb8")
 note_scene = ExtResource("2_rarhs")
+beam_scene = ExtResource("3_nxtc6")
 level_data_scene = ExtResource("3_vcsgt")
-bpm = 60.0
 initial_scroll_speed = 1200.0
 
 [node name="Player" parent="." instance=ExtResource("2_rvslj")]

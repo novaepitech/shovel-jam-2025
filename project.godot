@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Sheet Music"
+config/name="Arpeggio"
 run/main_scene="uid://2lqfsharfeg4"
 config/features=PackedStringArray("4.5")
 config/icon="res://icon.svg"
