@@ -1,4 +1,3 @@
-# res://scripts/main.gd
 extends Node2D
 
 @export var note_scene: PackedScene
@@ -10,9 +9,11 @@ extends Node2D
 # The note spawning Timer is no longer needed.
 @onready var world_container: Node2D = $WorldContainer
 @onready var staff_lines: TextureRect = $WorldContainer/StaffLines
+@onready var player: Player = $Player
 
 var beat_duration: float
 var current_scroll_speed: float
+var level_notes: Array[Note] = []
 
 
 func _ready() -> void:
@@ -20,6 +21,9 @@ func _ready() -> void:
 
 	beat_duration = 60.0 / bpm
 	current_scroll_speed = initial_scroll_speed
+	
+	# We start our global clock
+	RhythmConductor.start(bpm)
 
 	# We directly call our new function that builds the entire level at once.
 	build_level_layout()
@@ -28,7 +32,6 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	# The _process function is now very simple, it only scrolls the world.
 	world_container.position.x -= current_scroll_speed * delta
-
 
 func _on_speed_change_requested(new_speed: float):
 	print("Speed changed from %f to %f" % [current_scroll_speed, new_speed])
@@ -76,6 +79,9 @@ func build_level_layout():
 
 			note_instance.position = Vector2(new_x_pos, new_y_pos)
 			world_container.add_child(note_instance)
+			
+			# We add the new note to the level_notes list
+			level_notes.append(note_instance)
 
 			# --- Beam Creation Logic ---
 			# Beams are typically used for eighth (CROCHE) and sixteenth (DOUBLE) notes.
@@ -150,7 +156,13 @@ func build_level_layout():
 
 	# Le noeud de données et ses enfants (les modèles NoteData) ne sont plus nécessaires
 	level_data_node.queue_free()
-
+	
+	## Once all notes have been created and added to the list,
+	## give the partition to the player
+	if not level_notes.is_empty():
+		player.initialize_rhythmic_movement(level_notes)
+	else:
+		printerr("Level build completed, but no notes were found in the level data.")
 
 func calculate_wait_time_for_note(note_type: NoteData.NoteType) -> float:
 	match note_type:

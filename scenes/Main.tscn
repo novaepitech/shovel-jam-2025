@@ -25,11 +25,17 @@ jump_height = 160.0
 jump_time_to_peak = 0.4000000000087311
 jump_time_to_descent = 0.3000000000029104
 
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.8, 0.8)
+
 [node name="NoteSpawnTimer" type="Timer" parent="."]
 wait_time = 1.5
 
 [node name="SpawnPoint" type="Marker2D" parent="."]
 position = Vector2(1070, -245)
+
+[node name="SpawnPoint2" type="Marker2D" parent="."]
+position = Vector2(1452, 192)
 
 [node name="Floor" type="StaticBody2D" parent="."]
 position = Vector2(84, 459)
@@ -44,9 +50,6 @@ offset_top = -743.0
 offset_right = 4329.0
 offset_bottom = 3810.0
 texture = ExtResource("4_vcsgt")
-
-[node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(0.8, 0.8)
 
 [node name="WorldContainer" type="Node2D" parent="."]
 
