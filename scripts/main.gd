@@ -31,7 +31,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	# The _process function is now very simple, it only scrolls the world.
-	world_container.position.x -= current_scroll_speed * delta
+	#world_container.position.x -= current_scroll_speed * delta
+	pass
 
 func _on_speed_change_requested(new_speed: float):
 	print("Speed changed from %f to %f" % [current_scroll_speed, new_speed])

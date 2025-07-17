@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://mhvcccnis7bn" path="res://assets/lines.png" id="6_c01mt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vcsgt"]
-size = Vector2(1568, 489)
+size = Vector2(2417, 489)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_elqb8")
@@ -21,12 +21,12 @@ initial_scroll_speed = 1200.0
 [node name="Player" parent="." instance=ExtResource("2_rvslj")]
 z_index = 2
 position = Vector2(-186, 135)
-jump_height = 160.0
-jump_time_to_peak = 0.4000000000087311
-jump_time_to_descent = 0.3000000000029104
+run_speed = 600.0
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="Player"]
+offset = Vector2(350, 0)
 zoom = Vector2(0.8, 0.8)
+position_smoothing_enabled = true
 
 [node name="NoteSpawnTimer" type="Timer" parent="."]
 wait_time = 1.5
@@ -41,6 +41,7 @@ position = Vector2(1452, 192)
 position = Vector2(84, 459)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+position = Vector2(424.5, 0)
 shape = SubResource("RectangleShape2D_vcsgt")
 
 [node name="Background" type="TextureRect" parent="."]
