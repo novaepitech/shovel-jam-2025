@@ -20,8 +20,7 @@ initial_scroll_speed = 1200.0
 
 [node name="Player" parent="." instance=ExtResource("2_rvslj")]
 z_index = 2
-position = Vector2(-186, 113)
-run_speed = 600.0
+position = Vector2(-715, 113)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 offset = Vector2(350, 0)
@@ -38,7 +37,7 @@ position = Vector2(1070, -245)
 position = Vector2(1452, 192)
 
 [node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(84, 437)
+position = Vector2(-445, 437)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
 position = Vector2(424.5, 0)

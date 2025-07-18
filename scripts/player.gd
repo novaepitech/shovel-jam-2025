@@ -1,197 +1,217 @@
 class_name Player
 extends CharacterBody2D
 
-enum State { IDLE_ON_NOTE, MOVING_TO_NOTE, WAITING_FOR_FIRST_INPUT }
+enum State {
+	INITIAL_RUN,
+	IDLE_ON_NOTE,
+	MOVING_TO_NOTE,
+	FINISHED,
+	FAILED
+}
 
-const RHYTHM_WINDOW_BEATS = 2.5 # Fenêtre de tolérance (ajustez si besoin)
+@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 var _note_sequence: Array[Note] = []
 var _current_note_index: int = -1
-var _state: State = State.WAITING_FOR_FIRST_INPUT
-var _move_tween: Tween
-var _landing_offset: Vector2 = Vector2.ZERO
+var _state: State = State.INITIAL_RUN
 
-@export var run_speed: float = 150.0
-var jump_height: float = 160.0
-var jump_time_to_peak: float = 0.4
-var jump_time_to_descent: float = 0.3
-var jump_velocity: float
-var jump_gravity: float
-var fall_gravity: float
+var _is_current_move_validated: bool = false
+
+var _move_tween: Tween
+var _landing_offset: Vector2 = Vector2(-15.0, -90.0)
+const INITIAL_RUN_SPEED = 300.0
+
+#-----------------------------------------------------------------------------
+# INITIALISATION
+#-----------------------------------------------------------------------------
 
 func _ready():
-	jump_velocity = ((2.0 * jump_height) / jump_time_to_peak) * -1.0
-	jump_gravity = ((-2.0 * jump_height) / (jump_time_to_peak * jump_time_to_peak)) * -1.0
-	fall_gravity = ((-2.0 * jump_height) / (jump_time_to_descent * jump_time_to_descent)) * -1.0
-	
-	var collision_shape = $CollisionShape2D
-	if collision_shape and collision_shape.shape is RectangleShape2D:
-		_landing_offset.x = -25.0
-		_landing_offset.y = -30.0
-	else:
-		printerr("Player's collision shape not found or not a RectangleShape2D. Landing will be off.")
-
-func _physics_process(delta):
-	# La logique de déplacement initial est inchangée
-	if _state == State.WAITING_FOR_FIRST_INPUT:
-		velocity.x = run_speed
-		velocity.y += get_custom_gravity() * delta
-		move_and_slide()
-	
-	# --- REFACTORING DE LA GESTION D'ENTRÉE ---
-	var performed_action: GameActions.Type = _get_player_rhythmic_input()
-	if performed_action != GameActions.Type.NONE:
-		# Quel que soit l'état, si une action rythmique est tentée, on la valide.
-		_attempt_rhythmic_action(performed_action)
-
-# --- NOUVELLE FONCTION ---
-# Exigence 1 & 2: Détecte une entrée et la mappe à une action de jeu.
-# Pour l'instant, on utilise une détection simple "is_action_just_pressed" comme demandé.
-func _get_player_rhythmic_input() -> GameActions.Type:
-	if Input.is_action_just_pressed("saut"):
-		return GameActions.Type.SAUT
-	if Input.is_action_just_pressed("pas"):
-		return GameActions.Type.PAS
-	if Input.is_action_just_pressed("petit_pas"):
-		return GameActions.Type.PETIT_PAS
-	
-	return GameActions.Type.NONE
-
+	var camera = Camera2D.new()
+	camera.offset = Vector2(350, 0)
+	camera.position_smoothing_enabled = true
+	add_child(camera)
+	motion_mode = MOTION_MODE_FLOATING
+	animated_sprite.play("default") # L'animation de course joue dès le début
 
 func initialize_rhythmic_movement(notes: Array[Note]) -> void:
 	_note_sequence = notes
-	if not _note_sequence.is_empty():
-		_current_note_index = -1
-	else:
-		print("Level is empty.")
+	if _note_sequence.is_empty():
+		_state = State.FINISHED
 
+#-----------------------------------------------------------------------------
+# BOUCLE DE JEU PRINCIPALE (_physics_process)
+#-----------------------------------------------------------------------------
 
-# --- FONCTION ENTIÈREMENT REFACTORISÉE ---
-# Exigence 4: Logique de validation complète (Timing + Type d'action).
-func _attempt_rhythmic_action(performed_action: GameActions.Type):
-	# Pour la toute première action, on ne valide rien, on calibre et on démarre.
-	if _state == State.WAITING_FOR_FIRST_INPUT:
-		RhythmConductor.calibrate()
-		# On utilise l'action effectuée pour le premier mouvement.
-		_initiate_move_to_next_note(performed_action)
+func _physics_process(_delta: float):
+	match _state:
+		State.INITIAL_RUN:
+			_process_state_initial_run()
+		State.IDLE_ON_NOTE:
+			_process_state_idle_on_note()
+		State.MOVING_TO_NOTE:
+			_process_state_moving_to_note()
+		State.FAILED:
+			pass
+
+func _process_state_initial_run():
+	if _note_sequence.is_empty():
 		return
+		
+	velocity = Vector2(INITIAL_RUN_SPEED, 0)
+	move_and_slide()
+	
+	var first_note_pos = _note_sequence[0].global_position
+	if global_position.x >= first_note_pos.x:
+		print("Initial run complete. Reached first note.")
+		global_position = first_note_pos + _landing_offset
+		_note_sequence[0].bump()
+		_current_note_index = 0
+		_state = State.IDLE_ON_NOTE
+		velocity = Vector2.ZERO
+		animated_sprite.stop() # On arrête l'animation en attendant sur la note
 
-	# On ne peut agir que si on est en attente sur une note.
-	if _state != State.IDLE_ON_NOTE:
-		return
-
-	# --- 1. VALIDATION TEMPORELLE (RYTHME) ---
-	var input_beat = RhythmConductor.song_position_in_beats
+func _process_state_idle_on_note():
 	var current_note = _note_sequence[_current_note_index]
-	var target_beat = RhythmConductor.get_calibrated_target_beat(current_note.target_beat)
-	var offset = abs(input_beat - target_beat)
-	var is_on_time = offset <= RHYTHM_WINDOW_BEATS
+	
+	if RhythmConductor.song_position_in_beats >= current_note.target_beat:
+		_start_automatic_move_to_next_note()
 
-	# --- 2. VALIDATION DU TYPE D'ACTION ---
-	var required_action = current_note.required_action
-	var is_correct_action = (performed_action == required_action)
+func _process_state_moving_to_note():
+	if _is_current_move_validated:
+		return
 
-	print("Input: %s | Required: %s | On Time: %s" % [GameActions.Type.keys()[performed_action], GameActions.Type.keys()[required_action], is_on_time])
+	var performed_action = _get_player_rhythmic_input()
+	if performed_action != GameActions.Type.NONE:
+		_validate_player_input(performed_action)
 
-	# --- 3. CONCLUSION (SUCCÈS OU ÉCHEC) ---
-	if is_on_time and is_correct_action:
-		print(" -> SUCCESS!")
-		_initiate_move_to_next_note(performed_action)
-	else:
-		print(" -> FAILURE! (Reason: %s, %s)" % ["Incorrect Action" if not is_correct_action else "On Time", "Off-beat" if not is_on_time else "Correct Timing"])
-		# Pour l'instant on ne fait rien en cas d'échec, comme demandé.
-		# Plus tard, on ajoutera ici la perte de vie, etc.
-		# get_tree().change_scene_to_file("res://scenes/game_over_screen.tscn")
+#-----------------------------------------------------------------------------
+# LOGIQUE DE MOUVEMENT (DÉCLENCHEMENT AUTOMATIQUE)
+#-----------------------------------------------------------------------------
 
-
-# Le paramètre est maintenant un GameActions.Type
-func _initiate_move_to_next_note(action_type: GameActions.Type):
-	var next_note_index: int = _current_note_index + 1
+func _start_automatic_move_to_next_note():
+	var next_note_index = _current_note_index + 1
 
 	if next_note_index >= _note_sequence.size():
-		print("End of the level!")
+		print("Level finished!")
+		_state = State.FINISHED
 		return
 
-	var previous_state_snapshot = _state
 	_state = State.MOVING_TO_NOTE
+	_is_current_move_validated = false
+
+	# CORRECTION 1 : Lancer l'animation dès le début du mouvement !
+	animated_sprite.play("default")
+
+	var current_note = _note_sequence[_current_note_index]
+	var next_note = _note_sequence[next_note_index]
 	
-	var start_pos: Vector2
-	if previous_state_snapshot == State.WAITING_FOR_FIRST_INPUT:
-		start_pos = global_position
-	else:
-		start_pos = _note_sequence[_current_note_index].global_position + _landing_offset
+	var move_action_type = current_note.required_action
+	
+	var move_duration_beats = get_parent().get_note_duration_in_beats(current_note.rhythmic_value)
+	var move_duration_seconds = move_duration_beats * RhythmConductor.time_per_beat
+	
+	print("Starting move from note %d to %d. Duration: %.2fs. Trajectory: %s" % [_current_note_index, next_note_index, move_duration_seconds, GameActions.Type.keys()[move_action_type]])
+	
+	_execute_tween_movement(global_position, next_note.global_position + _landing_offset, move_action_type, move_duration_seconds)
 
-	var target_note_pos = _note_sequence[next_note_index].global_position
-	var end_pos: Vector2 = target_note_pos + _landing_offset
-
-	_execute_tween_movement(start_pos, end_pos, action_type, previous_state_snapshot)
-
-# Le paramètre est maintenant un GameActions.Type
-func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: GameActions.Type, previous_state: State):
+func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: GameActions.Type, duration: float):
 	if _move_tween and _move_tween.is_valid():
 		_move_tween.kill()
 
-	_move_tween = create_tween()
-	var time_per_beat = 60.0 / RhythmConductor._bpm
-	
-	var move_duration = time_per_beat
-	if previous_state == State.IDLE_ON_NOTE:
-		var current_note_data = _note_sequence[_current_note_index]
-		var note_duration_in_beats = get_parent().get_note_duration_in_beats(current_note_data.rhythmic_value)
-		move_duration = note_duration_in_beats * time_per_beat
-	
-	var control_point_1: Vector2
-	var mid_point = start_pos.lerp(end_pos, 0.5)
-	var delta_y = end_pos.y - start_pos.y
+	_move_tween = create_tween().set_parallel(false)
 
-	# On utilise notre enum pour choisir la trajectoire (contexte du GDD)
+	# --- NOUVELLE LOGIQUE DYNAMIQUE ---
+	# 1. On définit des "facteurs de hauteur" pour chaque type de mouvement.
+	#    Ces valeurs sont des pourcentages de la distance du saut.
+	const SAUT_FACTOR = 0.3      # L'arc fera 30% de la hauteur de la distance horizontale
+	const PAS_FACTOR = 0.15      # L'arc fera 15%...
+	const PETIT_PAS_FACTOR = 0.05  # L'arc fera 5%...
+
+	# 2. On calcule la distance horizontale du saut.
+	var distance_x = abs(end_pos.x - start_pos.x)
+	var arc_height = 0.0
+
+	# 3. On choisit le bon facteur et on calcule la hauteur de l'arc.
 	match action_type:
 		GameActions.Type.SAUT:
-			# Grand saut
-			control_point_1 = mid_point + Vector2(0, -250 - (delta_y * 0.5))
+			arc_height = distance_x * SAUT_FACTOR
 		GameActions.Type.PAS:
-			# Saut léger
-			control_point_1 = mid_point + Vector2(0, -100 - (delta_y * 0.5))
+			arc_height = distance_x * PAS_FACTOR
 		GameActions.Type.PETIT_PAS:
-			# Quasi pas de saut
-			control_point_1 = mid_point + Vector2(0, -20 - (delta_y * 0.5))
-		_:
-			control_point_1 = mid_point
+			arc_height = distance_x * PETIT_PAS_FACTOR
+
+	# 4. On s'assure que même les sauts verticaux ont un petit arc pour le style.
+	arc_height = max(arc_height, 20.0)
+
+	var mid_point = start_pos.lerp(end_pos, 0.5)
+	# Le point de contrôle est maintenant dynamiquement calculé.
+	var control_point = mid_point - Vector2(0, arc_height)
+	# ------------------------------------
 
 	_move_tween.tween_method(
-		_update_position_along_curve.bind(start_pos, control_point_1, end_pos),
-		0.0, 1.0, move_duration
+		_update_position_along_curve.bind(start_pos, control_point, end_pos),
+		0.0, 1.0, duration
 	).set_trans(Tween.TRANS_LINEAR)
 
-	_move_tween.tween_callback(_on_movement_finished.bind(previous_state))
+	_move_tween.tween_callback(_on_movement_finished)
 
+#-----------------------------------------------------------------------------
+# LOGIQUE DE VALIDATION DE L'INPUT
+#-----------------------------------------------------------------------------
 
-func _update_position_along_curve(t: float, start: Vector2, ctrl: Vector2, end: Vector2):
-	var curve_pos = start.lerp(ctrl, t).lerp(ctrl.lerp(end, t), t)
-	global_position = curve_pos
+func _get_player_rhythmic_input() -> GameActions.Type:
+	if Input.is_action_just_pressed("saut"): return GameActions.Type.SAUT
+	if Input.is_action_just_pressed("pas"): return GameActions.Type.PAS
+	if Input.is_action_just_pressed("petit_pas"): return GameActions.Type.PETIT_PAS
+	return GameActions.Type.NONE
 
-func _on_movement_finished(previous_state: State):
-	print("Movement finished.")
+func _validate_player_input(performed_action: GameActions.Type):
+	var target_note_index = _current_note_index + 1
+	if target_note_index >= _note_sequence.size(): return
 	
-	if previous_state == State.WAITING_FOR_FIRST_INPUT:
-		print("First move complete. Disabling starting floor.")
-		var floor_node = get_parent().get_node_or_null("Floor")
-		if floor_node:
-			floor_node.get_node("CollisionShape2D").disabled = true
-		else:
-			printerr("Could not find 'Floor' node to disable it.")
-	
-	if _current_note_index < 0:
-		_current_note_index = 0
+	var target_note = _note_sequence[target_note_index]
+	var required_action = target_note.required_action
+
+	if performed_action == required_action:
+		print("  > Input '%s' CORRECT!" % GameActions.Type.keys()[performed_action])
+		_is_current_move_validated = true
 	else:
-		_current_note_index += 1
+		print("  > Input '%s' WRONG! (Required: %s)" % [GameActions.Type.keys()[performed_action], GameActions.Type.keys()[required_action]])
+
+#-----------------------------------------------------------------------------
+# FIN DU MOUVEMENT (ATTERRISSAGE)
+#-----------------------------------------------------------------------------
+
+func _on_movement_finished():
+	if _is_current_move_validated:
+		_land_successfully()
+	else:
+		_fail_movement()
+
+func _land_successfully():
+	_current_note_index += 1
+	var target_note = _note_sequence[_current_note_index]
+	
+	global_position = target_note.global_position + _landing_offset
+	target_note.bump()
+	
+	print("Landed successfully on note %d." % _current_note_index)
 	
 	_state = State.IDLE_ON_NOTE
-	
-	var target_note_pos = _note_sequence[_current_note_index].global_position
-	global_position = target_note_pos + _landing_offset
-	
-	_note_sequence[_current_note_index].bump()
+	animated_sprite.stop() # On arrête l'animation quand on attend
 
-func get_custom_gravity() -> float:
-	return jump_gravity if velocity.y < 0.0 else fall_gravity
+func _fail_movement():
+	print("!!! MOVEMENT FAILED !!! Player did not provide correct input.")
+	_state = State.FAILED
+	animated_sprite.stop()
+
+#-----------------------------------------------------------------------------
+# FONCTIONS UTILITAIRES
+#-----------------------------------------------------------------------------
+
+# CORRECTION 2 : Utiliser la bonne formule pour une courbe de saut (Bézier quadratique)
+func _update_position_along_curve(t: float, start: Vector2, ctrl: Vector2, end: Vector2):
+	# Cette formule crée un arc parfait entre start et end, en passant par le point de contrôle ctrl.
+	var p1 = start.lerp(ctrl, t)
+	var p2 = ctrl.lerp(end, t)
+	global_position = p1.lerp(p2, t)
