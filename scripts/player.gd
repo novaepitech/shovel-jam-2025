@@ -12,7 +12,6 @@ var _move_tween: Tween
 var _landing_offset: Vector2 = Vector2.ZERO
 
 @export var run_speed: float = 150.0
-# ... (les autres variables de saut sont inchangées)
 var jump_height: float = 160.0
 var jump_time_to_peak: float = 0.4
 var jump_time_to_descent: float = 0.3
@@ -27,8 +26,8 @@ func _ready():
 	
 	var collision_shape = $CollisionShape2D
 	if collision_shape and collision_shape.shape is RectangleShape2D:
-		_landing_offset.x = -60.0
-		_landing_offset.y = -55.0
+		_landing_offset.x = -25.0
+		_landing_offset.y = -30.0
 	else:
 		printerr("Player's collision shape not found or not a RectangleShape2D. Landing will be off.")
 
@@ -138,7 +137,7 @@ func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: 
 	var move_duration = time_per_beat
 	if previous_state == State.IDLE_ON_NOTE:
 		var current_note_data = _note_sequence[_current_note_index]
-		var note_duration_in_beats = get_parent().get_note_duration_in_beats(current_note_data.note_type)
+		var note_duration_in_beats = get_parent().get_note_duration_in_beats(current_note_data.rhythmic_value)
 		move_duration = note_duration_in_beats * time_per_beat
 	
 	var control_point_1: Vector2

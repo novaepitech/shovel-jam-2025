@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bmpxr5r1neoxk"]
 
-[ext_resource type="Texture2D" uid="uid://qq2he4c2w14i" path="res://assets/sprites/beam.png" id="1_5ijbd"]
+[ext_resource type="Texture2D" uid="uid://dufyo1q2usd34" path="res://assets/sprites/beam.png" id="1_5ijbd"]
 
 [node name="Beam" type="Node2D"]
 

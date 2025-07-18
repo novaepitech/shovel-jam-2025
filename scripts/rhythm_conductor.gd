@@ -1,4 +1,3 @@
-# Arpeggio/scripts/rhythm_conductor.gd
 extends Node
 
 var song_position_in_beats: float = 0.0

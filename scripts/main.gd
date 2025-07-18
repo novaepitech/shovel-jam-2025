@@ -1,4 +1,3 @@
-# Arpeggio/scripts/main.gd
 extends Node2D
 
 @export var note_scene: PackedScene
@@ -12,7 +11,7 @@ extends Node2D
 @onready var player: Player = $Player
 
 # Durée d'un beat en secondes (par exemple, 0.5s pour 120 BPM)
-var time_per_beat: float 
+var time_per_beat: float
 var current_scroll_speed: float
 var level_notes: Array[Note] = []
 
@@ -21,12 +20,17 @@ func _ready() -> void:
 	SignalManager.speed_change_requested.connect(_on_speed_change_requested)
 
 	# Renommé 'beat_duration' en 'time_per_beat' pour plus de clarté
-	time_per_beat = 60.0 / bpm 
+	time_per_beat = 60.0 / bpm
 	current_scroll_speed = initial_scroll_speed
-	
+
 	RhythmConductor.start(bpm)
 
 	build_level_layout()
+
+	if not level_notes.is_empty():
+			player.initialize_rhythmic_movement(level_notes)
+	else:
+		printerr("Level build completed, but no notes were found in the level data.")
 
 
 func _on_speed_change_requested(new_speed: float):
@@ -44,23 +48,21 @@ func build_level_layout():
 	var temp_scroll_speed: float = initial_scroll_speed
 	var previous_note_data: NoteData = null
 	var previous_note_instance: Note = null
-	
+
 	var current_beat: float = 0.0
 
 	for node_data in all_nodes:
 		if node_data is NoteData:
-			# --- CORRECTION ET REFACTORING ---
-			# 1. On récupère la durée en "beats" de la note une seule fois.
+			# La traduction n'est plus nécessaire. `node_data.type` est maintenant correct.
 			var duration_in_beats = get_note_duration_in_beats(node_data.type)
-			
+
 			var note_instance = note_scene.instantiate()
-			note_instance.note_type = node_data.type
+
+			# On assigne directement la valeur correcte.
+			note_instance.rhythmic_value = node_data.type
 			note_instance.is_inverted = node_data.inverted
-			
-			# 2. On assigne le temps cible à la note.
 			note_instance.target_beat = current_beat
 
-			# 3. On calcule l'intervalle spatial en utilisant la durée en beats.
 			var time_interval = duration_in_beats * time_per_beat
 			var distance_to_add = temp_scroll_speed * time_interval
 			var new_x_pos = last_spawn_x + distance_to_add
@@ -68,21 +70,16 @@ func build_level_layout():
 
 			note_instance.position = Vector2(new_x_pos, new_y_pos)
 			world_container.add_child(note_instance)
-			
 			level_notes.append(note_instance)
-			
-			print("Note created at beat: ", note_instance.target_beat, " | Type: ", NoteData.NoteType.keys()[note_instance.note_type], " | Duration (beats): ", duration_in_beats)
-			
-			# 4. On avance notre horloge musicale pour la note suivante.
-			# Cette ligne est maintenant correctement placée et la logique est saine.
+
+			print("Note created at beat: ", note_instance.target_beat, " | Type: ", NoteData.NoteRhythmicValue.keys()[node_data.type], " | Duration (beats): ", duration_in_beats)
+
 			current_beat += duration_in_beats
-			
-			# (La logique de création des ligatures reste inchangée)
+
 			if previous_note_data and beam_scene:
-				var is_prev_beamable = (previous_note_data.type == NoteData.NoteType.CROCHE or \
-										previous_note_data.type == NoteData.NoteType.DOUBLE)
-				var is_curr_beamable = (node_data.type == NoteData.NoteType.CROCHE or \
-										node_data.type == NoteData.NoteType.DOUBLE)
+				# On utilise directement les types des données de note.
+				var is_prev_beamable = previous_note_data.type in [NoteData.NoteRhythmicValue.CROCHE, NoteData.NoteRhythmicValue.DOUBLE_CROCHE, NoteData.NoteRhythmicValue.TRIOLET_DE_CROCHES]
+				var is_curr_beamable = node_data.type in [NoteData.NoteRhythmicValue.CROCHE, NoteData.NoteRhythmicValue.DOUBLE_CROCHE, NoteData.NoteRhythmicValue.TRIOLET_DE_CROCHES]
 				var have_same_orientation = (previous_note_data.inverted == node_data.inverted)
 
 				if is_prev_beamable and is_curr_beamable and have_same_orientation:
@@ -118,31 +115,22 @@ func build_level_layout():
 	print("Level built. Total length of staff lines: ", staff_lines.size.x)
 
 	level_data_node.queue_free()
-	
-	if not level_notes.is_empty():
-		player.initialize_rhythmic_movement(level_notes)
-	else:
-		printerr("Level build completed, but no notes were found in the level data.")
 
 
 # La fonction `calculate_wait_time_for_note` a été supprimée.
 # Elle est remplacée par cette unique fonction de référence.
-func get_note_duration_in_beats(note_type: NoteData.NoteType) -> float:
-	# La valeur de base est la noire (quarter note), qui vaut 1 beat.
-	# NOTE: Les noms de l'enum peuvent prêter à confusion. On se base sur leur
-	# utilisation dans le code original pour déduire leur valeur rythmique.
-	# - NoteType.CROCHE dans le code se comporte comme une NOIRE (1 beat)
-	# - NoteType.DOUBLE se comporte comme une CROCHE (0.5 beat)
-	# - NoteType.NOIRE se comporte comme une BLANCHE (2 beats)
+func get_note_duration_in_beats(note_type: NoteData.NoteRhythmicValue) -> float:
 	match note_type:
-		NoteData.NoteType.CROCHE:
-			return 1.0 # 1 beat (équivalent Noire)
-		NoteData.NoteType.DOUBLE:
-			return 0.5 # 0.5 beat (équivalent Croche)
-		NoteData.NoteType.TRIOLET:
-			return 1.0 / 3.0 # 1/3 beat (Triolet de doubles-croches)
-		NoteData.NoteType.NOIRE:
-			return 2.0 # 2 beats (équivalent Blanche)
-		NoteData.NoteType.SILENCE:
-			return 1.0 # 1 beat (équivalent Soupir)
-	return 1.0 # Valeur par défaut
+		NoteData.NoteRhythmicValue.BLANCHE:
+			return 2.0
+		NoteData.NoteRhythmicValue.NOIRE:
+			return 1.0
+		NoteData.NoteRhythmicValue.CROCHE:
+			return 0.5
+		NoteData.NoteRhythmicValue.DOUBLE_CROCHE:
+			return 0.25 # La voici !
+		NoteData.NoteRhythmicValue.TRIOLET_DE_CROCHES:
+			return 1.0 / 3.0
+		NoteData.NoteRhythmicValue.SILENCE:
+			return 1.0
+	return 1.0

@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://dsh5yd6w0gkr6"]
+[gd_scene load_steps=7 format=3 uid="uid://dsh5yd6w0gkr6"]
 
 [ext_resource type="Script" uid="uid://cogfrqy4861rh" path="res://scripts/note.gd" id="1_tqwf5"]
 [ext_resource type="Texture2D" uid="uid://bdgrnmjlqkn2q" path="res://assets/sprites/noire.png" id="2_b5sp0"]
 [ext_resource type="Texture2D" uid="uid://dbborrwh16g6o" path="res://assets/sprites/croche.png" id="2_tqwf5"]
-[ext_resource type="Texture2D" uid="uid://bhi4sf2an3bsm" path="res://assets/sprites/double_croche.png" id="4_lxu8l"]
+[ext_resource type="Texture2D" uid="uid://x0m1kx3ib6jm" path="res://assets/sprites/blanche.png" id="2_vrulo"]
+[ext_resource type="Texture2D" uid="uid://bhi4sf2an3bsm" path="res://assets/sprites/double_croche.png" id="5_bnwil"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ku001"]
 size = Vector2(86, 23.5)
@@ -11,9 +12,10 @@ size = Vector2(86, 23.5)
 [node name="Note" type="Node2D" groups=["notes"]]
 z_index = 1
 script = ExtResource("1_tqwf5")
+texture_blanche = ExtResource("2_vrulo")
 texture_noire = ExtResource("2_b5sp0")
 texture_croche = ExtResource("2_tqwf5")
-texture_double = ExtResource("4_lxu8l")
+texture_double_croche = ExtResource("5_bnwil")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0, 0, 0, 1)
