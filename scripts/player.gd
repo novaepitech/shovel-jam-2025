@@ -9,6 +9,7 @@ var _note_sequence: Array[Note] = []
 var _current_note_index: int = -1
 var _state: State = State.WAITING_FOR_FIRST_INPUT
 var _move_tween: Tween
+var _landing_offset: Vector2 = Vector2.ZERO
 
 @export var run_speed: float = 150.0
 var jump_height: float = 160.0
@@ -22,6 +23,22 @@ func _ready():
 	jump_velocity = ((2.0 * jump_height) / jump_time_to_peak) * -1.0
 	jump_gravity = ((-2.0 * jump_height) / (jump_time_to_peak * jump_time_to_peak)) * -1.0
 	fall_gravity = ((-2.0 * jump_height) / (jump_time_to_descent * jump_time_to_descent)) * -1.0
+	
+	# --- CALCUL DE L'OFFSET D'ATTERRISSAGE ---
+	# On calcule dynamiquement la distance entre le centre du joueur et ses pieds.
+	var collision_shape = $CollisionShape2D
+	# S'assurer que la shape est bien un rectangle
+	if collision_shape and collision_shape.shape is RectangleShape2D:
+		# La hauteur du joueur est la taille Y de sa collision shape.
+		# L'offset vertical est la moitié de cette hauteur, en négatif (pour monter).
+		var player_height = collision_shape.shape.size.y
+		_landing_offset.y = -player_height / 2.0
+		# On peut aussi ajouter un petit offset X si on veut que le joueur
+		# atterrisse légèrement à gauche de la tête de la note.
+		_landing_offset.x = -60.0
+		_landing_offset.y = -55.0
+	else:
+		printerr("Player's collision shape not found or not a RectangleShape2D. Landing will be off.")
 
 func _physics_process(delta):
 	match _state:
@@ -97,12 +114,13 @@ func _initiate_move_to_next_note(action_type: String):
 	if previous_state_snapshot == State.WAITING_FOR_FIRST_INPUT:
 		start_pos = global_position
 	else:
-		start_pos = _note_sequence[_current_note_index].global_position
+		start_pos = _note_sequence[_current_note_index].global_position + _landing_offset
 
-	var end_pos: Vector2 = _note_sequence[next_note_index].global_position
+	# We calculate the final destination *with the offset* before starting the tween.
+	var target_note_pos = _note_sequence[next_note_index].global_position
+	var end_pos: Vector2 = target_note_pos + _landing_offset
 
 	_execute_tween_movement(start_pos, end_pos, action_type, previous_state_snapshot)
-
 
 func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: String, previous_state: State):
 	if _move_tween and _move_tween.is_valid():
@@ -162,7 +180,8 @@ func _on_movement_finished(previous_state: State):
 	_state = State.IDLE_ON_NOTE
 	
 	var target_note_pos = _note_sequence[_current_note_index].global_position
-	global_position = target_note_pos
+	# On applique l'offset calculé pour que les pieds du joueur soient au bon endroit.
+	global_position = target_note_pos + _landing_offset
 	
 	_note_sequence[_current_note_index].bump()
 
