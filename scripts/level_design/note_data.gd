@@ -2,10 +2,6 @@
 class_name NoteData
 extends Marker2D
 
-# We need to explicitly load the script resource for the tool to find it.
-#const MusicTheory = preload("res://scripts/music_theory.gd")
-
-
 # This enum is unchanged
 enum NoteType {
 	SILENCE,
@@ -23,6 +19,24 @@ enum NoteType {
 
 # This will show up as a checkbox in the Inspector.
 @export var inverted: bool = false
+
+# Cette fonction associe un type de note à l'action requise pour la valider.
+static func get_required_action_for_type(note_type: NoteType) -> GameActions.Type:
+	match note_type:
+		# Selon le GDD et le code existant:
+		# - NOIRE (utilisé comme une blanche) -> Grand saut
+		# - CROCHE (utilisé comme une noire) -> Pas normal
+		# - DOUBLE (utilisé comme une croche) -> Petit pas
+		NoteType.NOIRE:
+			return GameActions.Type.SAUT
+		NoteType.CROCHE:
+			return GameActions.Type.PAS
+		NoteData.NoteType.DOUBLE:
+			return GameActions.Type.PETIT_PAS
+		_:
+			# Par défaut, on peut retourner une action simple ou une erreur.
+			# Pour l'instant, on considère que les autres types utilisent un 'PAS'.
+			return GameActions.Type.PAS
 
 func _ready():
 	if Engine.is_editor_hint():

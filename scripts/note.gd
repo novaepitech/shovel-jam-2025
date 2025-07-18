@@ -1,17 +1,15 @@
-# Arpeggio/scripts/note.gd
 class_name Note
 extends Node2D
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var static_body: StaticBody2D = $StaticBody2D
 
-# --- PROBLÈME 1: AJOUT DE LA DONNÉE TEMPORELLE ---
-# Chaque note a maintenant une position temporelle cible, exprimée en "beats"
-# musicaux. Cette valeur sera calculée par main.gd lors de la création du niveau.
 var target_beat: float = 0.0
 
 @export var note_type: NoteData.NoteType = NoteData.NoteType.CROCHE
 @export var is_inverted: bool = false
+
+var required_action: GameActions.Type
 
 @export var texture_noire: Texture2D
 @export var texture_croche: Texture2D
@@ -25,6 +23,8 @@ const BEAM_OFFSET_DOWN_STEM: float = 130.0
 
 func _ready():
 	original_position = sprite.position
+	
+	required_action = NoteData.get_required_action_for_type(note_type)
 
 	match note_type:
 		NoteData.NoteType.NOIRE:

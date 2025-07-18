@@ -52,21 +52,25 @@ pitch = 7
 [node name="Marker2D9" type="Marker2D" parent="."]
 position = Vector2(933, -236)
 script = ExtResource("1_7gloj")
+type = 4
 pitch = 8
 
 [node name="Marker2D10" type="Marker2D" parent="."]
 position = Vector2(1030, -292)
 script = ExtResource("1_7gloj")
+type = 4
 pitch = 9
 
 [node name="Marker2D11" type="Marker2D" parent="."]
 position = Vector2(1131, -348)
 script = ExtResource("1_7gloj")
+type = 4
 pitch = 10
 
 [node name="Marker2D12" type="Marker2D" parent="."]
 position = Vector2(1224, -404)
 script = ExtResource("1_7gloj")
+type = 4
 pitch = 11
 
 [node name="SpeedTrigger" parent="." instance=ExtResource("2_1p5j8")]

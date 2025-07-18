@@ -29,9 +29,6 @@ func _ready() -> void:
 	build_level_layout()
 
 
-func _process(delta: float) -> void:
-	pass
-
 func _on_speed_change_requested(new_speed: float):
 	print("Speed changed from %f to %f" % [current_scroll_speed, new_speed])
 	current_scroll_speed = new_speed
