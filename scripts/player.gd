@@ -1,80 +1,86 @@
-# res://scripts/player.gd
-
 class_name Player
 extends CharacterBody2D
 
-# --- Machine d'état ---
-enum State {
-	IDLE_ON_NOTE,
-	MOVING_TO_NOTE,
-	WAITING_FOR_FIRST_INPUT
-}
+enum State { IDLE_ON_NOTE, MOVING_TO_NOTE, WAITING_FOR_FIRST_INPUT }
+#const RHYTHM_WINDOW_BEATS = 0.0625
+const RHYTHM_WINDOW_BEATS = 1.5
 
-# --- Variables ---
 var _note_sequence: Array[Note] = []
 var _current_note_index: int = -1
 var _state: State = State.WAITING_FOR_FIRST_INPUT
 var _move_tween: Tween
 
-# --- Variables de physique pour l'état de départ ---
-@export var run_speed: float = 150.0 # Vitesse pour la course de départ
-@export var jump_height: float = 160.0
-@export var jump_time_to_peak: float = 0.4
-@export var jump_time_to_descent: float = 0.3
+@export var run_speed: float = 150.0
+var jump_height: float = 160.0
+var jump_time_to_peak: float = 0.4
+var jump_time_to_descent: float = 0.3
 var jump_velocity: float
 var jump_gravity: float
 var fall_gravity: float
-
 
 func _ready():
 	jump_velocity = ((2.0 * jump_height) / jump_time_to_peak) * -1.0
 	jump_gravity = ((-2.0 * jump_height) / (jump_time_to_peak * jump_time_to_peak)) * -1.0
 	fall_gravity = ((-2.0 * jump_height) / (jump_time_to_descent * jump_time_to_descent)) * -1.0
 
-
 func _physics_process(delta):
 	match _state:
 		State.WAITING_FOR_FIRST_INPUT:
-			# Le joueur court vers la droite sur la plateforme de départ.
 			velocity.x = run_speed
-			
-			# On applique la gravité pour le maintenir au sol.
 			velocity.y += get_custom_gravity() * delta
 			move_and_slide()
-
-			# On écoute l'input pour le premier saut.
+			
 			if Input.is_action_just_pressed("jump"):
-				# On arrête le mouvement de course pour que le tween prenne le contrôle proprement.
 				velocity.x = 0
-				print("First input detected. Switching to rhythmic movement system.")
-				_start_move_to_next_note("jump")
+				_attempt_rhythmic_action("jump")
 
 		State.IDLE_ON_NOTE:
-			# Le joueur attend sur une note, sans bouger.
 			if Input.is_action_just_pressed("jump"):
-				_start_move_to_next_note("jump")
+				_attempt_rhythmic_action("jump")
 			elif Input.is_action_just_pressed("pas"):
-				_start_move_to_next_note("pas")
+				_attempt_rhythmic_action("pas")
 
 		State.MOVING_TO_NOTE:
-			# Le Tween gère le mouvement, donc on ne fait rien ici.
 			pass
-
 
 func initialize_rhythmic_movement(notes: Array[Note]) -> void:
 	_note_sequence = notes
-	print("Player received the level partition with %d notes." % _note_sequence.size())
-
 	if not _note_sequence.is_empty():
 		_current_note_index = -1
-		print("Player is on the starting platform. Ready for first input.")
 	else:
-		print("Level is empty, player is waiting on platform.")
+		print("Level is empty.")
 
+func _attempt_rhythmic_action(action_type: String):
+	# --- LOGIQUE DE CALIBRATION ---
+	# Si le joueur est sur la plateforme de départ, cette action va CALIBRER l'horloge.
+	# Elle ne sera pas jugée sur le rythme, elle le définit.
+	if _state == State.WAITING_FOR_FIRST_INPUT:
+		RhythmConductor.calibrate()
+		_initiate_move_to_next_note(action_type)
+		return
 
-func _start_move_to_next_note(action_type: String):
+	# Pour toutes les actions suivantes, on utilise le système de validation.
+	if _state == State.IDLE_ON_NOTE:
+		var input_beat = RhythmConductor.song_position_in_beats
+		var current_note = _note_sequence[_current_note_index]
+		
+		# On récupère le temps cible CALIBRÉ.
+		var target_beat = RhythmConductor.get_calibrated_target_beat(current_note.target_beat)
+
+		var offset = abs(input_beat - target_beat)
+		
+		print("Input at beat: %f | Calibrated Target: %f | Offset: %f" % [input_beat, target_beat, offset])
+
+		if offset <= RHYTHM_WINDOW_BEATS:
+			print(" -> SUCCESS!")
+			_initiate_move_to_next_note(action_type)
+		else:
+			print(" -> FAILURE!")
+			get_tree().change_scene_to_file("res://scenes/game_over_screen.tscn")
+
+# Cette fonction est maintenant appelée uniquement après une validation réussie.
+func _initiate_move_to_next_note(action_type: String):
 	var next_note_index: int
-	
 	if _state == State.WAITING_FOR_FIRST_INPUT:
 		next_note_index = 0
 	else:
@@ -84,18 +90,18 @@ func _start_move_to_next_note(action_type: String):
 		print("End of the level!")
 		return
 
-	var previous_state = _state
+	var previous_state_snapshot = _state
 	_state = State.MOVING_TO_NOTE
 	
 	var start_pos: Vector2
-	if previous_state == State.WAITING_FOR_FIRST_INPUT:
+	if previous_state_snapshot == State.WAITING_FOR_FIRST_INPUT:
 		start_pos = global_position
 	else:
 		start_pos = _note_sequence[_current_note_index].global_position
 
 	var end_pos: Vector2 = _note_sequence[next_note_index].global_position
 
-	_execute_tween_movement(start_pos, end_pos, action_type, previous_state)
+	_execute_tween_movement(start_pos, end_pos, action_type, previous_state_snapshot)
 
 
 func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: String, previous_state: State):
@@ -103,9 +109,15 @@ func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: 
 		_move_tween.kill()
 
 	_move_tween = create_tween()
-	var beat_duration = 60.0 / RhythmConductor._bpm
-	var move_duration = beat_duration
-
+	var time_per_beat = 60.0 / RhythmConductor._bpm
+	
+	# La durée du mouvement doit correspondre à la durée de la note actuelle
+	var move_duration = time_per_beat # Par défaut 1 beat
+	if previous_state == State.IDLE_ON_NOTE:
+		var current_note_data = _note_sequence[_current_note_index]
+		var note_duration_in_beats = get_parent().get_note_duration_in_beats(current_note_data.note_type)
+		move_duration = note_duration_in_beats * time_per_beat
+	
 	var control_point_1: Vector2
 	var mid_point = start_pos.lerp(end_pos, 0.5)
 	var delta_y = end_pos.y - start_pos.y
