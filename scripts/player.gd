@@ -10,6 +10,7 @@ enum State {
 }
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var initial_walk_timer: Timer = $InitialWalkTimer
 
 var _note_sequence: Array[Note] = []
 var _current_note_index: int = -1
@@ -31,12 +32,26 @@ func _ready():
 	camera.position_smoothing_enabled = true
 	add_child(camera)
 	motion_mode = MOTION_MODE_FLOATING
-	animated_sprite.play("default") # L'animation de course joue dès le début
+	animated_sprite.play("default")
+	
+	initial_walk_timer.timeout.connect(_on_initial_walk_timer_timeout)
+
 
 func initialize_rhythmic_movement(notes: Array[Note]) -> void:
 	_note_sequence = notes
 	if _note_sequence.is_empty():
 		_state = State.FINISHED
+		return
+	
+	# On récupère le Main node pour accéder au BPM et au lead_in_beats
+	var main_node = get_tree().get_root().get_node("Main")
+	var lead_in_duration_seconds = main_node.lead_in_beats * (60.0 / main_node.bpm)
+	
+	print("Durée de la course initiale calculée : %.2f secondes" % lead_in_duration_seconds)
+
+	# On règle le Timer avec cette durée calculée avant de le démarrer
+	initial_walk_timer.wait_time = lead_in_duration_seconds
+	initial_walk_timer.start()
 
 #-----------------------------------------------------------------------------
 # BOUCLE DE JEU PRINCIPALE (_physics_process)
@@ -54,21 +69,10 @@ func _physics_process(_delta: float):
 			pass
 
 func _process_state_initial_run():
-	if _note_sequence.is_empty():
-		return
-		
+	# Pendant la course initiale, on avance simplement.
+	# La condition de position est supprimée car le Timer s'en charge maintenant.
 	velocity = Vector2(INITIAL_RUN_SPEED, 0)
 	move_and_slide()
-	
-	var first_note_pos = _note_sequence[0].global_position
-	if global_position.x >= first_note_pos.x:
-		print("Initial run complete. Reached first note.")
-		global_position = first_note_pos + _landing_offset
-		_note_sequence[0].bump()
-		_current_note_index = 0
-		_state = State.IDLE_ON_NOTE
-		velocity = Vector2.ZERO
-		animated_sprite.stop() # On arrête l'animation en attendant sur la note
 
 func _process_state_idle_on_note():
 	var current_note = _note_sequence[_current_note_index]
@@ -88,6 +92,20 @@ func _process_state_moving_to_note():
 # LOGIQUE DE MOUVEMENT (DÉCLENCHEMENT AUTOMATIQUE)
 #-----------------------------------------------------------------------------
 
+func _on_initial_walk_timer_timeout():
+	# Sécurité : on s'assure qu'on est bien dans l'état de course initiale.
+	if _state != State.INITIAL_RUN:
+		return
+
+	print("Course initiale de 3s terminée. Déclenchement du mouvement vers la première note.")
+	
+	# On arrête la course en avant.
+	velocity = Vector2.ZERO
+	
+	# On déclenche manuellement le premier mouvement.
+	_start_automatic_move_to_next_note()
+
+
 func _start_automatic_move_to_next_note():
 	var next_note_index = _current_note_index + 1
 
@@ -98,21 +116,35 @@ func _start_automatic_move_to_next_note():
 
 	_state = State.MOVING_TO_NOTE
 	_is_current_move_validated = false
-
-	# CORRECTION 1 : Lancer l'animation dès le début du mouvement !
 	animated_sprite.play("default")
 
-	var current_note = _note_sequence[_current_note_index]
+	# --- MODIFICATION CLÉ POUR GÉRER LE PREMIER SAUT ---
+	var move_action_type: GameActions.Type
+	var move_duration_beats: float
+	var start_pos: Vector2
+	
+	if _current_note_index == -1:
+		# Cas spécial : le tout premier mouvement part de la position actuelle du joueur.
+		start_pos = global_position
+		# On peut définir une action et une durée par défaut pour ce premier saut.
+		# Par exemple, un "PAS" (noire) qui dure 1 temps.
+		move_action_type = GameActions.Type.PAS
+		move_duration_beats = 1.0 
+	else:
+		# Cas normal : le mouvement part de la note précédente.
+		var current_note = _note_sequence[_current_note_index]
+		start_pos = current_note.global_position + _landing_offset
+		move_action_type = current_note.required_action
+		move_duration_beats = get_parent().get_note_duration_in_beats(current_note.rhythmic_value)
+	
+	# Le reste de la fonction est inchangé, mais utilisera nos variables `start_pos`, etc.
 	var next_note = _note_sequence[next_note_index]
-	
-	var move_action_type = current_note.required_action
-	
-	var move_duration_beats = get_parent().get_note_duration_in_beats(current_note.rhythmic_value)
 	var move_duration_seconds = move_duration_beats * RhythmConductor.time_per_beat
 	
-	print("Starting move from note %d to %d. Duration: %.2fs. Trajectory: %s" % [_current_note_index, next_note_index, move_duration_seconds, GameActions.Type.keys()[move_action_type]])
+	print("Début du mouvement de l'index %d vers %d. Durée: %.2fs. Trajectoire: %s" % [_current_note_index, next_note_index, move_duration_seconds, GameActions.Type.keys()[move_action_type]])
 	
-	_execute_tween_movement(global_position, next_note.global_position + _landing_offset, move_action_type, move_duration_seconds)
+	_execute_tween_movement(start_pos, next_note.global_position + _landing_offset, move_action_type, move_duration_seconds)
+
 
 func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: GameActions.Type, duration: float):
 	if _move_tween and _move_tween.is_valid():
@@ -120,18 +152,13 @@ func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: 
 
 	_move_tween = create_tween().set_parallel(false)
 
-	# --- NOUVELLE LOGIQUE DYNAMIQUE ---
-	# 1. On définit des "facteurs de hauteur" pour chaque type de mouvement.
-	#    Ces valeurs sont des pourcentages de la distance du saut.
-	const SAUT_FACTOR = 0.3      # L'arc fera 30% de la hauteur de la distance horizontale
-	const PAS_FACTOR = 0.15      # L'arc fera 15%...
-	const PETIT_PAS_FACTOR = 0.05  # L'arc fera 5%...
+	const SAUT_FACTOR = 0.3
+	const PAS_FACTOR = 0.15
+	const PETIT_PAS_FACTOR = 0.05
 
-	# 2. On calcule la distance horizontale du saut.
 	var distance_x = abs(end_pos.x - start_pos.x)
 	var arc_height = 0.0
 
-	# 3. On choisit le bon facteur et on calcule la hauteur de l'arc.
 	match action_type:
 		GameActions.Type.SAUT:
 			arc_height = distance_x * SAUT_FACTOR
@@ -140,13 +167,10 @@ func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: 
 		GameActions.Type.PETIT_PAS:
 			arc_height = distance_x * PETIT_PAS_FACTOR
 
-	# 4. On s'assure que même les sauts verticaux ont un petit arc pour le style.
 	arc_height = max(arc_height, 20.0)
 
 	var mid_point = start_pos.lerp(end_pos, 0.5)
-	# Le point de contrôle est maintenant dynamiquement calculé.
 	var control_point = mid_point - Vector2(0, arc_height)
-	# ------------------------------------
 
 	_move_tween.tween_method(
 		_update_position_along_curve.bind(start_pos, control_point, end_pos),
@@ -156,7 +180,7 @@ func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: 
 	_move_tween.tween_callback(_on_movement_finished)
 
 #-----------------------------------------------------------------------------
-# LOGIQUE DE VALIDATION DE L'INPUT
+# Le reste du fichier est inchangé...
 #-----------------------------------------------------------------------------
 
 func _get_player_rhythmic_input() -> GameActions.Type:
@@ -178,10 +202,6 @@ func _validate_player_input(performed_action: GameActions.Type):
 	else:
 		print("  > Input '%s' WRONG! (Required: %s)" % [GameActions.Type.keys()[performed_action], GameActions.Type.keys()[required_action]])
 
-#-----------------------------------------------------------------------------
-# FIN DU MOUVEMENT (ATTERRISSAGE)
-#-----------------------------------------------------------------------------
-
 func _on_movement_finished():
 	if _is_current_move_validated:
 		_land_successfully()
@@ -198,20 +218,14 @@ func _land_successfully():
 	print("Landed successfully on note %d." % _current_note_index)
 	
 	_state = State.IDLE_ON_NOTE
-	animated_sprite.stop() # On arrête l'animation quand on attend
+	animated_sprite.stop()
 
 func _fail_movement():
 	print("!!! MOVEMENT FAILED !!! Player did not provide correct input.")
 	_state = State.FAILED
 	animated_sprite.stop()
 
-#-----------------------------------------------------------------------------
-# FONCTIONS UTILITAIRES
-#-----------------------------------------------------------------------------
-
-# CORRECTION 2 : Utiliser la bonne formule pour une courbe de saut (Bézier quadratique)
 func _update_position_along_curve(t: float, start: Vector2, ctrl: Vector2, end: Vector2):
-	# Cette formule crée un arc parfait entre start et end, en passant par le point de contrôle ctrl.
 	var p1 = start.lerp(ctrl, t)
 	var p2 = ctrl.lerp(end, t)
 	global_position = p1.lerp(p2, t)

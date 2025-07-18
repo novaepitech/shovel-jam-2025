@@ -84,3 +84,7 @@ frame_progress = 0.45217958
 position = Vector2(-0.5, 0.5)
 scale = Vector2(1.1111112, 1)
 shape = SubResource("RectangleShape2D_v6fml")
+
+[node name="InitialWalkTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true

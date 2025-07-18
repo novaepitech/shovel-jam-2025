@@ -17,6 +17,7 @@ note_scene = ExtResource("2_rarhs")
 beam_scene = ExtResource("3_nxtc6")
 level_data_scene = ExtResource("3_vcsgt")
 initial_scroll_speed = 1200.0
+lead_in_beats = 6.0
 
 [node name="Player" parent="." instance=ExtResource("2_rvslj")]
 z_index = 2
