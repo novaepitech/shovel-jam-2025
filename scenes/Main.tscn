@@ -21,7 +21,7 @@ lead_in_beats = 6.0
 
 [node name="Player" parent="." instance=ExtResource("2_rvslj")]
 z_index = 2
-position = Vector2(-715, 113)
+position = Vector2(-1780, -21)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 offset = Vector2(350, 0)
@@ -31,14 +31,8 @@ position_smoothing_enabled = true
 [node name="NoteSpawnTimer" type="Timer" parent="."]
 wait_time = 1.5
 
-[node name="SpawnPoint" type="Marker2D" parent="."]
-position = Vector2(1070, -245)
-
-[node name="SpawnPoint2" type="Marker2D" parent="."]
-position = Vector2(1452, 192)
-
 [node name="Floor" type="StaticBody2D" parent="."]
-position = Vector2(-445, 437)
+position = Vector2(-1190, 437)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
 position = Vector2(424.5, 0)
@@ -46,19 +40,20 @@ shape = SubResource("RectangleShape2D_vcsgt")
 
 [node name="Background" type="TextureRect" parent="."]
 z_index = -1
-offset_left = -1251.0
+offset_left = -2181.0
 offset_top = -743.0
-offset_right = 4329.0
+offset_right = 3399.0
 offset_bottom = 3810.0
 texture = ExtResource("4_vcsgt")
 
 [node name="WorldContainer" type="Node2D" parent="."]
+position = Vector2(-231, 0)
 
 [node name="StaffLines" type="TextureRect" parent="WorldContainer"]
 modulate = Color(0, 0, 0, 1)
-offset_left = -1080.0
+offset_left = -1635.0
 offset_top = -657.0
-offset_right = 2760.0
+offset_right = 2205.0
 offset_bottom = 1389.0
 scale = Vector2(1.3776877, 0.6503316)
 texture = ExtResource("6_c01mt")

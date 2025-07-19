@@ -20,7 +20,7 @@ var _is_current_move_validated: bool = false
 
 var _move_tween: Tween
 var _landing_offset: Vector2 = Vector2(-15.0, -90.0)
-const INITIAL_RUN_SPEED = 300.0
+const INITIAL_RUN_SPEED = 600.0
 
 #-----------------------------------------------------------------------------
 # INITIALISATION
