@@ -22,7 +22,8 @@ func _ready():
 
 # Function called when the "Restart" button is pressed.
 func _on_restart_button_pressed():
-	# Reset game state via GameManager before restarting the scene.
+	# Reset game state via GameState before restarting the scene.
+	GameState.reset_lives()
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 # Function called when the "Quit" button is pressed.

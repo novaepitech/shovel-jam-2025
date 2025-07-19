@@ -37,9 +37,7 @@ func _on_player_failed():
 
 	if remaining_lives <= 0:
 		print("GAME OVER. No lives left.")
-		# Stop the game. In a full game, you might show a game over screen
-		# and offer to restart, which would call GameState.reset_lives().
-		get_tree().paused = true
+		get_tree().change_scene_to_file("res://scenes/game_over_screen.tscn")
 	else:
 		# Reload the level to try again. Because GameState is an autoload,
 		# its state will persist across this scene reload.
