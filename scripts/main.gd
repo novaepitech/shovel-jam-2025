@@ -21,7 +21,7 @@ func _ready() -> void:
 	SignalManager.speed_change_requested.connect(_on_speed_change_requested)
 
 	build_level_layout()
-	
+
 	RhythmConductor.start(bpm)
 
 	# L'initialisation du joueur ne le place plus, elle lui donne juste les données.
@@ -46,21 +46,28 @@ func build_level_layout():
 	var last_spawn_x: float = 500.0
 	var previous_note_instance: Note = null
 	var previous_note_data: NoteData = null
-	
+
 	# CHANGEMENT CLÉ: La partition ne commence pas à 0, mais après le "lead-in".
 	var current_beat: float = lead_in_beats
 
-	for node_data in all_nodes:
+	for i in range(all_nodes.size()):
+		var node_data = all_nodes[i]
 		if node_data is NoteData:
-			var duration_in_beats = get_note_duration_in_beats(node_data.type)
-
 			var note_instance = note_scene.instantiate()
 			note_instance.rhythmic_value = node_data.type
 			note_instance.is_inverted = node_data.inverted
-			
+
 			note_instance.target_beat = current_beat
 
-			var time_interval = duration_in_beats * (60.0 / bpm)
+			# CORRECTION PRINCIPALE: On calcule l'espacement en fonction de la note PRÉCÉDENTE
+			# Si c'est la première note, on utilise une noire par défaut
+			var spacing_duration: float
+			if previous_note_data == null:
+				spacing_duration = 1.0  # Première note: espacement d'une noire
+			else:
+				spacing_duration = get_note_duration_in_beats(previous_note_data.type)
+
+			var time_interval = spacing_duration * (60.0 / bpm)
 			var distance_to_add = initial_scroll_speed * time_interval
 			var new_x_pos = last_spawn_x + distance_to_add
 			var new_y_pos = MusicTheory.get_y_for_pitch(node_data.pitch)
@@ -69,15 +76,24 @@ func build_level_layout():
 			world_container.add_child(note_instance)
 			level_notes.append(note_instance)
 
-			print("Note created for beat: %.2f | Type: %s" % [note_instance.target_beat, NoteData.NoteRhythmicValue.keys()[node_data.type]])
-			
-			if previous_note_instance and beam_scene:
+			print("Note created for beat: %.2f | Type: %s | Spacing based on: %s" % [
+				note_instance.target_beat,
+				NoteData.NoteRhythmicValue.keys()[node_data.type],
+				NoteData.NoteRhythmicValue.keys()[previous_note_data.type] if previous_note_data else "default"
+			])
+
+			# CORRECTION BEAMING: Vérification plus stricte
+			if previous_note_instance and beam_scene and previous_note_data:
 				var is_prev_beamable = previous_note_data.type in [NoteData.NoteRhythmicValue.CROCHE, NoteData.NoteRhythmicValue.DOUBLE_CROCHE]
 				var is_curr_beamable = node_data.type in [NoteData.NoteRhythmicValue.CROCHE, NoteData.NoteRhythmicValue.DOUBLE_CROCHE]
+
+				# Les deux notes doivent être beamables pour créer une ligature
 				if is_prev_beamable and is_curr_beamable and (previous_note_data.inverted == node_data.inverted):
 					_create_beam(previous_note_instance, note_instance)
 
-			current_beat += duration_in_beats
+			# Mise à jour pour la prochaine itération
+			var current_note_duration = get_note_duration_in_beats(node_data.type)
+			current_beat += current_note_duration
 			last_spawn_x = new_x_pos
 			previous_note_instance = note_instance
 			previous_note_data = node_data
@@ -97,10 +113,10 @@ func _create_beam(start_note: Note, end_note: Note):
 	var beam_instance = beam_scene.instantiate()
 	world_container.add_child(beam_instance)
 	var beam_vector = end_point - start_point
-	
+
 	beam_instance.position = start_point
 	beam_instance.rotation = beam_vector.angle()
-	
+
 	const BEAM_TEXTURE_WIDTH = 64.0
 	beam_instance.scale.x = beam_vector.length() / BEAM_TEXTURE_WIDTH
 
