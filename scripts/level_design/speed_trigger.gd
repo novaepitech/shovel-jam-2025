@@ -1,4 +1,3 @@
-# res://scripts/level_design/SpeedTrigger.gd
 class_name SpeedTrigger
 extends Area2D
 

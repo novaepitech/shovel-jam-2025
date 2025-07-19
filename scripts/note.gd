@@ -28,15 +28,11 @@ var required_action: GameActions.Type
 var original_position: Vector2
 var is_bumping = false
 
-# Constantes pour le positionnement des ligatures (beams).
-const BEAM_OFFSET_UP_STEM: float = -145.0
-const BEAM_OFFSET_DOWN_STEM: float = 130.0
-
 
 func _ready():
 	# On sauvegarde la position initiale du sprite pour l'animation "bump".
 	original_position = sprite.position
-	
+
 	# On demande à notre classe statique NoteData quelle action est nécessaire pour cette valeur rythmique.
 	# La logique est maintenant centralisée et claire.
 	required_action = NoteData.get_required_action_for_type(rhythmic_value)
@@ -61,16 +57,6 @@ func _ready():
 
 	# On applique l'inversion de la texture si nécessaire.
 	sprite.flip_v = is_inverted
-
-
-## Retourne la position globale du point de connexion pour une ligature.
-func get_beam_connection_point() -> Vector2:
-	var stem_offset_y: float
-	if is_inverted:
-		stem_offset_y = BEAM_OFFSET_DOWN_STEM
-	else:
-		stem_offset_y = BEAM_OFFSET_UP_STEM
-	return global_position + Vector2(0, stem_offset_y)
 
 
 ## Déclenche une petite animation de "saut" de la note.

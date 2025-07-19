@@ -29,7 +29,7 @@ const INITIAL_RUN_SPEED = 600.0
 func _ready():
 	motion_mode = MOTION_MODE_FLOATING
 	animated_sprite.play("default")
-	
+
 	initial_walk_timer.timeout.connect(_on_initial_walk_timer_timeout)
 
 
@@ -38,11 +38,11 @@ func initialize_rhythmic_movement(notes: Array[Note]) -> void:
 	if _note_sequence.is_empty():
 		_state = State.FINISHED
 		return
-	
+
 	# On récupère le Main node pour accéder au BPM et au lead_in_beats
 	var main_node = get_tree().get_root().get_node("Main")
 	var lead_in_duration_seconds = main_node.lead_in_beats * (60.0 / main_node.bpm)
-	
+
 	print("Durée de la course initiale calculée : %.2f secondes" % lead_in_duration_seconds)
 
 	# On règle le Timer avec cette durée calculée avant de le démarrer
@@ -72,7 +72,7 @@ func _process_state_initial_run():
 
 func _process_state_idle_on_note():
 	var current_note = _note_sequence[_current_note_index]
-	
+
 	if RhythmConductor.song_position_in_beats >= current_note.target_beat:
 		_start_automatic_move_to_next_note()
 
@@ -94,10 +94,10 @@ func _on_initial_walk_timer_timeout():
 		return
 
 	print("Course initiale de 3s terminée. Déclenchement du mouvement vers la première note.")
-	
+
 	# On arrête la course en avant.
 	velocity = Vector2.ZERO
-	
+
 	# On déclenche manuellement le premier mouvement.
 	_start_automatic_move_to_next_note()
 
@@ -118,27 +118,27 @@ func _start_automatic_move_to_next_note():
 	var move_action_type: GameActions.Type
 	var move_duration_beats: float
 	var start_pos: Vector2
-	
+
 	if _current_note_index == -1:
 		# Cas spécial : le tout premier mouvement part de la position actuelle du joueur.
 		start_pos = global_position
 		# On peut définir une action et une durée par défaut pour ce premier saut.
 		# Par exemple, un "PAS" (noire) qui dure 1 temps.
 		move_action_type = GameActions.Type.PAS
-		move_duration_beats = 1.0 
+		move_duration_beats = 1.0
 	else:
 		# Cas normal : le mouvement part de la note précédente.
 		var current_note = _note_sequence[_current_note_index]
 		start_pos = current_note.global_position + _landing_offset
 		move_action_type = current_note.required_action
 		move_duration_beats = get_parent().get_note_duration_in_beats(current_note.rhythmic_value)
-	
+
 	# Le reste de la fonction est inchangé, mais utilisera nos variables `start_pos`, etc.
 	var next_note = _note_sequence[next_note_index]
 	var move_duration_seconds = move_duration_beats * RhythmConductor.time_per_beat
-	
+
 	print("Début du mouvement de l'index %d vers %d. Durée: %.2fs. Trajectoire: %s" % [_current_note_index, next_note_index, move_duration_seconds, GameActions.Type.keys()[move_action_type]])
-	
+
 	_execute_tween_movement(start_pos, next_note.global_position + _landing_offset, move_action_type, move_duration_seconds)
 
 
@@ -188,7 +188,7 @@ func _get_player_rhythmic_input() -> GameActions.Type:
 func _validate_player_input(performed_action: GameActions.Type):
 	var target_note_index = _current_note_index + 1
 	if target_note_index >= _note_sequence.size(): return
-	
+
 	var target_note = _note_sequence[target_note_index]
 	var required_action = target_note.required_action
 
@@ -207,12 +207,12 @@ func _on_movement_finished():
 func _land_successfully():
 	_current_note_index += 1
 	var target_note = _note_sequence[_current_note_index]
-	
+
 	global_position = target_note.global_position + _landing_offset
 	target_note.bump()
-	
+
 	print("Landed successfully on note %d." % _current_note_index)
-	
+
 	_state = State.IDLE_ON_NOTE
 	animated_sprite.stop()
 

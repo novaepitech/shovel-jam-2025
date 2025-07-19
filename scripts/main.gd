@@ -1,7 +1,6 @@
 extends Node2D
 
 @export var note_scene: PackedScene
-@export var beam_scene: PackedScene
 @export var level_data_scene: PackedScene
 @export var bpm: float = 120.0
 @export var initial_scroll_speed: float = 400.0
@@ -82,15 +81,6 @@ func build_level_layout():
 				NoteData.NoteRhythmicValue.keys()[previous_note_data.type] if previous_note_data else "default"
 			])
 
-			# CORRECTION BEAMING: Vérification plus stricte
-			if previous_note_instance and beam_scene and previous_note_data:
-				var is_prev_beamable = previous_note_data.type in [NoteData.NoteRhythmicValue.CROCHE, NoteData.NoteRhythmicValue.DOUBLE_CROCHE]
-				var is_curr_beamable = node_data.type in [NoteData.NoteRhythmicValue.CROCHE, NoteData.NoteRhythmicValue.DOUBLE_CROCHE]
-
-				# Les deux notes doivent être beamables pour créer une ligature
-				if is_prev_beamable and is_curr_beamable and (previous_note_data.inverted == node_data.inverted):
-					_create_beam(previous_note_instance, note_instance)
-
 			# Mise à jour pour la prochaine itération
 			var current_note_duration = get_note_duration_in_beats(node_data.type)
 			current_beat += current_note_duration
@@ -105,20 +95,6 @@ func build_level_layout():
 
 	staff_lines.size.x = last_spawn_x + get_viewport().get_visible_rect().size.x
 	level_data_node.queue_free()
-
-
-func _create_beam(start_note: Note, end_note: Note):
-	var start_point = start_note.get_beam_connection_point()
-	var end_point = end_note.get_beam_connection_point()
-	var beam_instance = beam_scene.instantiate()
-	world_container.add_child(beam_instance)
-	var beam_vector = end_point - start_point
-
-	beam_instance.position = start_point
-	beam_instance.rotation = beam_vector.angle()
-
-	const BEAM_TEXTURE_WIDTH = 64.0
-	beam_instance.scale.x = beam_vector.length() / BEAM_TEXTURE_WIDTH
 
 
 func get_note_duration_in_beats(note_type: NoteData.NoteRhythmicValue) -> float:

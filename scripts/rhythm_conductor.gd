@@ -11,7 +11,7 @@ func start(level_bpm: float) -> void:
 	if level_bpm <= 0:
 		printerr("BPM must be positive.")
 		return
-		
+
 	_bpm = level_bpm
 	time_per_beat = 60.0 / _bpm
 	song_position_in_beats = 0.0
