@@ -1,7 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://cxs7rtrtk8rcb"]
+[gd_scene load_steps=14 format=3 uid="uid://cxs7rtrtk8rcb"]
 
 [ext_resource type="Script" uid="uid://qflb8kngdirv" path="res://scripts/player.gd" id="1_v6fml"]
 [ext_resource type="Texture2D" uid="uid://c0xa307g7kdny" path="res://assets/sprites/player_run.png" id="2_v6fml"]
+[ext_resource type="AudioStream" uid="uid://d30trkt4jjxx4" path="res://assets/sounds/fail.mp3" id="3_3li8b"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3li8b"]
 atlas = ExtResource("2_v6fml")
@@ -72,6 +73,7 @@ size = Vector2(67.5, 181.5)
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_v6fml")
+fail_sound = ExtResource("3_3li8b")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(24, 100)
@@ -88,3 +90,6 @@ shape = SubResource("RectangleShape2D_v6fml")
 [node name="InitialWalkTimer" type="Timer" parent="."]
 wait_time = 3.0
 one_shot = true
+
+[node name="FailSoundPlayer" type="AudioStreamPlayer" parent="."]
+volume_db = -20.0

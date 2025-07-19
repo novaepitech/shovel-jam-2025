@@ -9,7 +9,7 @@ enum NoteRhythmicValue {
 	BLANCHE,       # 2 temps
 	NOIRE,         # 1 temps
 	CROCHE,        # 0.5 temps
-	DOUBLE_CROCHE, # 0.25 temps (LA VOICI !)
+	DOUBLE_CROCHE, # 0.25 temps
 	TRIOLET_DE_CROCHES
 }
 

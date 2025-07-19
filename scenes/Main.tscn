@@ -24,6 +24,7 @@ position = Vector2(-1780, -21)
 [node name="Camera2D" type="Camera2D" parent="Player"]
 offset = Vector2(350, 0)
 zoom = Vector2(0.8, 0.8)
+limit_bottom = 500
 position_smoothing_enabled = true
 
 [node name="NoteSpawnTimer" type="Timer" parent="."]
