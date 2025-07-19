@@ -27,10 +27,6 @@ const INITIAL_RUN_SPEED = 300.0
 #-----------------------------------------------------------------------------
 
 func _ready():
-	var camera = Camera2D.new()
-	camera.offset = Vector2(350, 0)
-	camera.position_smoothing_enabled = true
-	add_child(camera)
 	motion_mode = MOTION_MODE_FLOATING
 	animated_sprite.play("default")
 	

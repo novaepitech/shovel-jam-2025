@@ -45,41 +45,22 @@ script = ExtResource("1_7gloj")
 pitch = 7
 
 [node name="Marker2D13" type="Marker2D" parent="."]
-position = Vector2(969, -12)
-script = ExtResource("1_7gloj")
-
-[node name="Marker2D14" type="Marker2D" parent="."]
-position = Vector2(1102, -68)
-script = ExtResource("1_7gloj")
-pitch = 5
-
-[node name="Marker2D15" type="Marker2D" parent="."]
-position = Vector2(1224, -124)
-script = ExtResource("1_7gloj")
-pitch = 6
-
-[node name="Marker2D16" type="Marker2D" parent="."]
-position = Vector2(1332, -180)
-script = ExtResource("1_7gloj")
-pitch = 7
-
-[node name="Marker2D9" type="Marker2D" parent="."]
-position = Vector2(1502, -236)
+position = Vector2(969, -324)
 script = ExtResource("1_7gloj")
 pitch = 8
 
-[node name="Marker2D10" type="Marker2D" parent="."]
-position = Vector2(1599, -292)
+[node name="Marker2D14" type="Marker2D" parent="."]
+position = Vector2(1102, -382)
 script = ExtResource("1_7gloj")
 pitch = 9
 
-[node name="Marker2D11" type="Marker2D" parent="."]
-position = Vector2(1700, -348)
+[node name="Marker2D15" type="Marker2D" parent="."]
+position = Vector2(1224, -440)
 script = ExtResource("1_7gloj")
 pitch = 10
 
-[node name="Marker2D12" type="Marker2D" parent="."]
-position = Vector2(1793, -404)
+[node name="Marker2D16" type="Marker2D" parent="."]
+position = Vector2(1332, -498)
 script = ExtResource("1_7gloj")
 pitch = 11
 

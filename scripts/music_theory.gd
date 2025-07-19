@@ -25,18 +25,18 @@ enum Pitch {
 # Line 4: -144
 # Line 5 (top): -256
 const PITCH_Y_COORDINATES = {
-	Pitch.DO_LEDGER: 192,
-	Pitch.RE_BELOW: 156,
-	Pitch.MI_LINE1: 100,
-	Pitch.FA_SPACE1: 44,
-	Pitch.SOL_LINE2: -12,
-	Pitch.LA_SPACE2: -68,
-	Pitch.SI_LINE3: -124,
-	Pitch.DO_SPACE3: -180,
-	Pitch.RE_LINE4: -236,
-	Pitch.MI_SPACE4: -292,
-	Pitch.FA_LINE5: -348,
-	Pitch.SOL_ABOVE: -404
+	Pitch.DO_LEDGER: 140,
+	Pitch.RE_BELOW: 78,
+	Pitch.MI_LINE1: 24,
+	Pitch.FA_SPACE1: -34,
+	Pitch.SOL_LINE2: -92,
+	Pitch.LA_SPACE2: -150,
+	Pitch.SI_LINE3: -204,
+	Pitch.DO_SPACE3: -262,
+	Pitch.RE_LINE4: -320,
+	Pitch.MI_SPACE4: -374,
+	Pitch.FA_LINE5: -432,
+	Pitch.SOL_ABOVE: -486
 }
 
 ## Returns the global Y coordinate for a given musical pitch.
