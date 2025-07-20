@@ -23,6 +23,7 @@ pitch = 2
 [node name="Marker2D4" type="Marker2D" parent="."]
 position = Vector2(372, -34)
 script = ExtResource("1_7gloj")
+type = 1
 pitch = 3
 
 [node name="Marker2D5" type="Marker2D" parent="."]
