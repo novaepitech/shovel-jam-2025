@@ -268,7 +268,7 @@ func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: 
 	const SAUT_FACTOR = 0.3
 	const PAS_FACTOR = 0.15
 	const PETIT_PAS_FACTOR = 0.05
-	const SWING_FACTOR = 0.2  # Factor for swing arc height (adjust as needed)
+	const SWING_FACTOR = 0.5  # Factor for swing arc height (adjust as needed)
 
 	var distance_x = abs(end_pos.x - start_pos.x)
 	var arc_height = 0.0
@@ -279,7 +279,7 @@ func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: 
 		# Swing motion: control point is positioned to simulate grabbing and swinging from the tail
 		var mid_point = start_pos.lerp(end_pos, 0.5)
 		# Adjust control point to be higher or lower depending on note orientation (inverted notes may have tail upwards)
-		var control_point = mid_point + Vector2(0, arc_height)  # Adjust to swing "up" or "down" as needed
+		var control_point = mid_point - Vector2(0, arc_height)  # Adjust to swing "up" or "down" as needed
 		_move_tween.tween_method(
 			_update_position_along_curve.bind(start_pos, control_point, end_pos),
 			0.0, 1.0, duration
