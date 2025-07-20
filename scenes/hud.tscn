@@ -1,0 +1,34 @@
+[gd_scene load_steps=3 format=3 uid="uid://deadsjgeo7chk"]
+
+[ext_resource type="Script" uid="uid://dg58y1lwgp3mg" path="res://scripts/hud.gd" id="1_oo0fn"]
+[ext_resource type="Texture2D" uid="uid://bl2yroldh1c8y" path="res://assets/sprites/lives.png" id="2_oo0fn"]
+
+[node name="HUD" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_oo0fn")
+
+[node name="LivesContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -182.0
+offset_top = 20.0
+offset_right = -182.0
+offset_bottom = 20.0
+grow_horizontal = 0
+
+[node name="Heart1" type="Sprite2D" parent="LivesContainer"]
+position = Vector2(26.799995, 38.399998)
+scale = Vector2(0.06, 0.06)
+texture = ExtResource("2_oo0fn")
+
+[node name="Heart2" type="Sprite2D" parent="LivesContainer"]
+position = Vector2(76.799995, 38.4)
+scale = Vector2(0.06, 0.06)
+texture = ExtResource("2_oo0fn")
+
+[node name="Heart3" type="Sprite2D" parent="LivesContainer"]
+position = Vector2(126.799995, 38.4)
+scale = Vector2(0.06, 0.06)
+texture = ExtResource("2_oo0fn")

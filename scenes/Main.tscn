@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://2lqfsharfeg4"]
+[gd_scene load_steps=9 format=3 uid="uid://2lqfsharfeg4"]
 
 [ext_resource type="Script" uid="uid://kjuaeqp622km" path="res://scripts/main.gd" id="1_elqb8"]
 [ext_resource type="PackedScene" uid="uid://dsh5yd6w0gkr6" path="res://scenes/Note.tscn" id="2_rarhs"]
 [ext_resource type="PackedScene" uid="uid://cxs7rtrtk8rcb" path="res://scenes/Player.tscn" id="2_rvslj"]
 [ext_resource type="PackedScene" uid="uid://ulc1c25ef1wh" path="res://scenes/level_1_data.tscn" id="3_vcsgt"]
 [ext_resource type="Texture2D" uid="uid://beqiequ522omj" path="res://assets/background.png" id="4_vcsgt"]
+[ext_resource type="PackedScene" uid="uid://deadsjgeo7chk" path="res://scenes/hud.tscn" id="5_nxtc6"]
 [ext_resource type="Texture2D" uid="uid://mhvcccnis7bn" path="res://assets/lines.png" id="6_c01mt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vcsgt"]
@@ -57,3 +58,5 @@ offset_bottom = 1389.0
 scale = Vector2(1.3776877, 0.6503316)
 texture = ExtResource("6_c01mt")
 stretch_mode = 1
+
+[node name="HUD" parent="." instance=ExtResource("5_nxtc6")]
