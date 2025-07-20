@@ -4,11 +4,11 @@ extends CharacterBody2D
 signal player_failed
 
 enum State {
-	INITIAL_RUN,
-	IDLE_ON_NOTE,
-	MOVING_TO_NOTE,
-	FINISHED,
-	FAILED
+INITIAL_RUN,
+IDLE_ON_NOTE,
+MOVING_TO_NOTE,
+FINISHED,
+FAILED
 }
 
 @onready var fail_sound_player: AudioStreamPlayer = $FailSoundPlayer
@@ -16,17 +16,18 @@ enum State {
 @onready var initial_walk_timer: Timer = $InitialWalkTimer
 
 @export var fail_sound: AudioStream
+@export var time_window_in_beats: float = 0.25  # Marge d'erreur avant/après le target_beat (en beats)
 
 var _note_sequence: Array[Note] = []
 var _current_note_index: int = -1
 var _state: State = State.INITIAL_RUN
 
-var _is_current_move_validated: bool = false
-
 var _move_tween: Tween
 var _landing_offset: Vector2 = Vector2(-15.0, -90.0)
 const INITIAL_RUN_SPEED = 600.0
 const GRAVITY = 2000.0
+
+var pending_notes: Array[Dictionary] = []
 
 #-----------------------------------------------------------------------------
 # INITIALISATION
@@ -70,6 +71,14 @@ func _physics_process(delta: float):
 			velocity.y += GRAVITY * delta
 			move_and_slide()
 
+	# Check for missed windows in all relevant states
+	if _state in [State.INITIAL_RUN, State.MOVING_TO_NOTE, State.IDLE_ON_NOTE]:
+		for p in pending_notes:
+			if RhythmConductor.song_position_in_beats > p.upper_bound:
+				print("!!! MOVEMENT FAILED !!! Missed input window for note at beat %.2f" % p.target_beat)
+				_fail_movement()
+				break
+
 func _process_state_initial_run():
 	if not _move_tween or not _move_tween.is_running():
 		_move_tween = create_tween()
@@ -84,12 +93,48 @@ func _process_state_idle_on_note():
 		_start_automatic_move_to_next_note()
 
 func _process_state_moving_to_note():
-	if _is_current_move_validated:
-		return
+	pass  # Input handling is now in _input, no need for per-frame checks here
 
-	var performed_action = _get_player_rhythmic_input()
+#-----------------------------------------------------------------------------
+# INPUT HANDLING (decoupled from states)
+#-----------------------------------------------------------------------------
+
+func _input(event: InputEvent) -> void:
+	var performed_action = GameActions.Type.NONE
+	if event.is_action_pressed("saut"): performed_action = GameActions.Type.SAUT
+	elif event.is_action_pressed("pas"): performed_action = GameActions.Type.PAS
+	elif event.is_action_pressed("petit_pas"): performed_action = GameActions.Type.PETIT_PAS
+	# Add other actions if needed (e.g., BALANCIER)
+
 	if performed_action != GameActions.Type.NONE:
-		_validate_player_input(performed_action)
+		var current_beat = RhythmConductor.song_position_in_beats
+		var candidates: Array[Dictionary] = []
+		var any_in_window: bool = false
+
+		for p in pending_notes:
+			if current_beat >= p.lower_bound and current_beat <= p.upper_bound:
+				any_in_window = true
+				if performed_action == p.required_action:
+					candidates.append(p)
+
+		if not candidates.is_empty():
+			# Select the closest by target_beat
+			var closest = candidates[0]
+			var min_diff = abs(candidates[0].target_beat - current_beat)
+			for c in candidates.slice(1):
+				var diff = abs(c.target_beat - current_beat)
+				if diff < min_diff:
+					min_diff = diff
+					closest = c
+
+			# Validate
+			print("  > Input '%s' CORRECT et SYNCHRONISÉ! (Beat actuel: %.2f, Fenêtre: [%.2f, %.2f])" % [GameActions.Type.keys()[performed_action], current_beat, closest.lower_bound, closest.upper_bound])
+			pending_notes.erase(closest)
+		else:
+			if any_in_window:
+				print("  > Input '%s' WRONG or Timing INCORRECT!" % GameActions.Type.keys()[performed_action])
+				_fail_movement()
+			# Else, input outside any window, ignore
 
 #-----------------------------------------------------------------------------
 # LOGIQUE D'ÉCHEC
@@ -104,10 +149,7 @@ func _on_initial_walk_timer_timeout():
 	_start_automatic_move_to_next_note()
 
 func _on_movement_finished():
-	if _is_current_move_validated:
-		_land_successfully()
-	else:
-		_fail_movement()
+	_land_successfully()
 
 func _land_successfully():
 	_current_note_index += 1
@@ -151,8 +193,19 @@ func _start_automatic_move_to_next_note():
 		_state = State.FINISHED
 		return
 
+	# Add the target note to pending validations BEFORE starting the movement
+	var target_note = _note_sequence[next_note_index]
+	var lower_bound = target_note.target_beat - time_window_in_beats
+	var upper_bound = target_note.target_beat + time_window_in_beats
+	pending_notes.append({
+		"note": target_note,
+		"target_beat": target_note.target_beat,
+		"lower_bound": lower_bound,
+		"upper_bound": upper_bound,
+		"required_action": target_note.required_action
+	})
+
 	_state = State.MOVING_TO_NOTE
-	_is_current_move_validated = false
 	animated_sprite.play("default")
 
 	var move_action_type: GameActions.Type
@@ -209,25 +262,6 @@ func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: 
 	).set_trans(Tween.TRANS_LINEAR)
 
 	_move_tween.tween_callback(_on_movement_finished)
-
-func _get_player_rhythmic_input() -> GameActions.Type:
-	if Input.is_action_just_pressed("saut"): return GameActions.Type.SAUT
-	if Input.is_action_just_pressed("pas"): return GameActions.Type.PAS
-	if Input.is_action_just_pressed("petit_pas"): return GameActions.Type.PETIT_PAS
-	return GameActions.Type.NONE
-
-func _validate_player_input(performed_action: GameActions.Type):
-	var target_note_index = _current_note_index + 1
-	if target_note_index >= _note_sequence.size(): return
-
-	var target_note = _note_sequence[target_note_index]
-	var required_action = target_note.required_action
-
-	if performed_action == required_action:
-		print("  > Input '%s' CORRECT!" % GameActions.Type.keys()[performed_action])
-		_is_current_move_validated = true
-	else:
-		print("  > Input '%s' WRONG! (Required: %s)" % [GameActions.Type.keys()[performed_action], GameActions.Type.keys()[required_action]])
 
 func _update_position_along_curve(t: float, start: Vector2, ctrl: Vector2, end: Vector2):
 	var p1 = start.lerp(ctrl, t)

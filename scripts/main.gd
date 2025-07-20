@@ -67,8 +67,6 @@ func build_level_layout():
 			note_instance.rhythmic_value = node_data.type
 			note_instance.is_inverted = node_data.inverted
 
-			note_instance.target_beat = current_beat
-
 			var spacing_duration: float
 			if previous_note_data == null:
 				spacing_duration = 1.0
@@ -80,12 +78,13 @@ func build_level_layout():
 			var new_x_pos = last_spawn_x + distance_to_add
 			var new_y_pos = MusicTheory.get_y_for_pitch(node_data.pitch)
 
+			current_beat += spacing_duration
+			note_instance.target_beat = current_beat
+
 			note_instance.position = Vector2(new_x_pos, new_y_pos)
 			world_container.add_child(note_instance)
 			level_notes.append(note_instance)
 
-			var current_note_duration = get_note_duration_in_beats(node_data.type)
-			current_beat += current_note_duration
 			last_spawn_x = new_x_pos
 			previous_note_instance = note_instance
 			previous_note_data = node_data
