@@ -28,6 +28,9 @@ var required_action: GameActions.Type
 var original_position: Vector2
 var is_bumping = false
 
+# Constant for the Y offset adjustment when inverting notes
+const INVERT_Y_OFFSET: float = 340.0
+
 
 func _ready():
 	# On sauvegarde la position initiale du sprite pour l'animation "bump".
@@ -56,7 +59,11 @@ func _ready():
 			sprite.texture = texture_noire
 
 	# On applique l'inversion de la texture si nécessaire.
-	sprite.flip_v = is_inverted
+	if is_inverted:
+		sprite.flip_v = true
+		# Adjust the note's position to compensate for the visual flip
+		# Move the note down so the head appears at the same level as non-inverted notes
+		position.y += INVERT_Y_OFFSET
 
 
 ## Déclenche une petite animation de "saut" de la note.

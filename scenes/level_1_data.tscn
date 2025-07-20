@@ -6,9 +6,9 @@
 [node name="Level1_Data" type="Node2D"]
 
 [node name="Marker2D" type="Marker2D" parent="."]
-position = Vector2(107, -374)
+position = Vector2(107, -34)
 script = ExtResource("1_7gloj")
-pitch = 9
+pitch = 3
 
 [node name="Marker2D2" type="Marker2D" parent="."]
 position = Vector2(136, -204)
