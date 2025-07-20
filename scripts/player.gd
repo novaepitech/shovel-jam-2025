@@ -206,7 +206,12 @@ func _start_automatic_move_to_next_note():
 	})
 
 	_state = State.MOVING_TO_NOTE
-	animated_sprite.play("default")
+
+	# Check if the target note is inverted to decide which animation to play
+	if target_note.is_inverted:
+		animated_sprite.play("swing")  # Play swing animation for inverted notes
+	else:
+		animated_sprite.play("default")  # Default animation for regular notes
 
 	var move_action_type: GameActions.Type
 	var move_duration_beats: float
@@ -225,12 +230,13 @@ func _start_automatic_move_to_next_note():
 	var next_note = _note_sequence[next_note_index]
 	var move_duration_seconds = move_duration_beats * RhythmConductor.time_per_beat
 
-	print("Début du mouvement de l'index %d vers %d. Durée: %.2fs. Trajectoire: %s" % [_current_note_index, next_note_index, move_duration_seconds, GameActions.Type.keys()[move_action_type]])
+	print("Début du mouvement de l'index %d vers %d. Durée: %.2fs. Trajectoire: %s, Inverted: %s" % [_current_note_index, next_note_index, move_duration_seconds, GameActions.Type.keys()[move_action_type], "Yes" if target_note.is_inverted else "No"])
 
-	_execute_tween_movement(start_pos, next_note.global_position + _landing_offset, move_action_type, move_duration_seconds)
+	# Pass the inverted status to the movement function
+	_execute_tween_movement(start_pos, next_note.global_position + _landing_offset, move_action_type, move_duration_seconds, target_note.is_inverted)
 
 
-func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: GameActions.Type, duration: float):
+func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: GameActions.Type, duration: float, is_inverted: bool = false):
 	if _move_tween and _move_tween.is_valid():
 		_move_tween.kill()
 
@@ -239,27 +245,40 @@ func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: 
 	const SAUT_FACTOR = 0.3
 	const PAS_FACTOR = 0.15
 	const PETIT_PAS_FACTOR = 0.05
+	const SWING_FACTOR = 0.2  # Factor for swing arc height (adjust as needed)
 
 	var distance_x = abs(end_pos.x - start_pos.x)
 	var arc_height = 0.0
 
-	match action_type:
-		GameActions.Type.SAUT:
-			arc_height = distance_x * SAUT_FACTOR
-		GameActions.Type.PAS:
-			arc_height = distance_x * PAS_FACTOR
-		GameActions.Type.PETIT_PAS:
-			arc_height = distance_x * PETIT_PAS_FACTOR
+	if is_inverted:
+		# For inverted notes, create a swinging motion by adjusting the control point
+		arc_height = distance_x * SWING_FACTOR
+		# Swing motion: control point is positioned to simulate grabbing and swinging from the tail
+		var mid_point = start_pos.lerp(end_pos, 0.5)
+		# Adjust control point to be higher or lower depending on note orientation (inverted notes may have tail upwards)
+		var control_point = mid_point + Vector2(0, arc_height)  # Adjust to swing "up" or "down" as needed
+		_move_tween.tween_method(
+			_update_position_along_curve.bind(start_pos, control_point, end_pos),
+			0.0, 1.0, duration
+		).set_trans(Tween.TRANS_SINE)  # Use sine transition for smoother swing
+	else:
+		# Default jumping motion for non-inverted notes
+		match action_type:
+			GameActions.Type.SAUT:
+				arc_height = distance_x * SAUT_FACTOR
+			GameActions.Type.PAS:
+				arc_height = distance_x * PAS_FACTOR
+			GameActions.Type.PETIT_PAS:
+				arc_height = distance_x * PETIT_PAS_FACTOR
 
-	arc_height = max(arc_height, 20.0)
+		arc_height = max(arc_height, 20.0)
+		var mid_point = start_pos.lerp(end_pos, 0.5)
+		var control_point = mid_point - Vector2(0, arc_height)
 
-	var mid_point = start_pos.lerp(end_pos, 0.5)
-	var control_point = mid_point - Vector2(0, arc_height)
-
-	_move_tween.tween_method(
-		_update_position_along_curve.bind(start_pos, control_point, end_pos),
-		0.0, 1.0, duration
-	).set_trans(Tween.TRANS_LINEAR)
+		_move_tween.tween_method(
+			_update_position_along_curve.bind(start_pos, control_point, end_pos),
+			0.0, 1.0, duration
+		).set_trans(Tween.TRANS_LINEAR)
 
 	_move_tween.tween_callback(_on_movement_finished)
 

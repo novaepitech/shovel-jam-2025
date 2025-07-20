@@ -6,52 +6,53 @@
 [node name="Level1_Data" type="Node2D"]
 
 [node name="Marker2D" type="Marker2D" parent="."]
-position = Vector2(107, 140)
+position = Vector2(107, -374)
 script = ExtResource("1_7gloj")
-pitch = 0
+pitch = 9
 
 [node name="Marker2D2" type="Marker2D" parent="."]
-position = Vector2(181, 78)
+position = Vector2(136, -204)
 script = ExtResource("1_7gloj")
-pitch = 1
+pitch = 6
 
 [node name="Marker2D3" type="Marker2D" parent="."]
-position = Vector2(288, 24)
+position = Vector2(399, 24)
 script = ExtResource("1_7gloj")
 pitch = 2
 
 [node name="Marker2D4" type="Marker2D" parent="."]
-position = Vector2(372, -34)
+position = Vector2(483, -34)
 script = ExtResource("1_7gloj")
 type = 1
 pitch = 3
 
 [node name="Marker2D5" type="Marker2D" parent="."]
-position = Vector2(463, -92)
+position = Vector2(574, -92)
 script = ExtResource("1_7gloj")
 
 [node name="Marker2D6" type="Marker2D" parent="."]
-position = Vector2(596, -150)
+position = Vector2(707, -150)
 script = ExtResource("1_7gloj")
 type = 3
 pitch = 5
 
 [node name="Marker2D7" type="Marker2D" parent="."]
-position = Vector2(718, -204)
+position = Vector2(829, -204)
 script = ExtResource("1_7gloj")
 type = 3
 pitch = 6
 
 [node name="Marker2D8" type="Marker2D" parent="."]
-position = Vector2(826, -262)
+position = Vector2(937, -262)
 script = ExtResource("1_7gloj")
 type = 3
 pitch = 7
 
 [node name="Marker2D13" type="Marker2D" parent="."]
-position = Vector2(969, -320)
+position = Vector2(272, -486)
 script = ExtResource("1_7gloj")
-pitch = 8
+pitch = 11
+inverted = true
 
 [node name="Marker2D14" type="Marker2D" parent="."]
 position = Vector2(1102, -374)
