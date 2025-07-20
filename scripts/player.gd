@@ -4,11 +4,11 @@ extends CharacterBody2D
 signal player_failed
 
 enum State {
-INITIAL_RUN,
-IDLE_ON_NOTE,
-MOVING_TO_NOTE,
-FINISHED,
-FAILED
+	INITIAL_RUN,
+	IDLE_ON_NOTE,
+	MOVING_TO_NOTE,
+	FINISHED,
+	FAILED
 }
 
 @onready var fail_sound_player: AudioStreamPlayer = $FailSoundPlayer
@@ -18,12 +18,19 @@ FAILED
 @export var fail_sound: AudioStream
 @export var time_window_in_beats: float = 0.25  # Marge d'erreur avant/après le target_beat (en beats)
 
+# Existing landing offset (shared for X and base Y)
+@export var landing_offset: Vector2 = Vector2(-15.0, -90.0)
+
+# Adjustment to lower the final landing Y for inverted notes only.
+# Positive values move the landing position down (further down the screen).
+# Tune this in the Godot editor (e.g., 20-50 pixels) to grab the tail "a bit lower".
+@export var inverted_landing_y_adjustment: float = 30.0
+
 var _note_sequence: Array[Note] = []
 var _current_note_index: int = -1
 var _state: State = State.INITIAL_RUN
 
 var _move_tween: Tween
-var _landing_offset: Vector2 = Vector2(-15.0, -90.0)
 const INITIAL_RUN_SPEED = 600.0
 const GRAVITY = 2000.0
 
@@ -155,7 +162,12 @@ func _land_successfully():
 	_current_note_index += 1
 	var target_note = _note_sequence[_current_note_index]
 
-	global_position = target_note.global_position + _landing_offset
+	# Compute landing offset with inverted adjustment (only affects Y)
+	var final_offset = landing_offset
+	if target_note.is_inverted:
+		final_offset.y += inverted_landing_y_adjustment
+
+	global_position = target_note.global_position + final_offset
 	target_note.bump()
 
 	print("Landed successfully on note %d." % _current_note_index)
@@ -223,7 +235,13 @@ func _start_automatic_move_to_next_note():
 		move_duration_beats = 1.0
 	else:
 		var current_note = _note_sequence[_current_note_index]
-		start_pos = current_note.global_position + _landing_offset
+
+		# NEW: Compute start offset with inverted adjustment if the CURRENT note (starting point) is inverted
+		var start_offset = landing_offset
+		if current_note.is_inverted:
+			start_offset.y += inverted_landing_y_adjustment
+
+		start_pos = current_note.global_position + start_offset
 		move_action_type = current_note.required_action
 		move_duration_beats = get_parent().get_note_duration_in_beats(current_note.rhythmic_value)
 
@@ -232,8 +250,13 @@ func _start_automatic_move_to_next_note():
 
 	print("Début du mouvement de l'index %d vers %d. Durée: %.2fs. Trajectoire: %s, Inverted: %s" % [_current_note_index, next_note_index, move_duration_seconds, GameActions.Type.keys()[move_action_type], "Yes" if target_note.is_inverted else "No"])
 
+	# Compute landing offset with inverted adjustment (only affects Y) for the END position
+	var final_offset = landing_offset
+	if target_note.is_inverted:
+		final_offset.y += inverted_landing_y_adjustment
+
 	# Pass the inverted status to the movement function
-	_execute_tween_movement(start_pos, next_note.global_position + _landing_offset, move_action_type, move_duration_seconds, target_note.is_inverted)
+	_execute_tween_movement(start_pos, next_note.global_position + final_offset, move_action_type, move_duration_seconds, target_note.is_inverted)
 
 
 func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: GameActions.Type, duration: float, is_inverted: bool = false):

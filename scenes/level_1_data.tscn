@@ -68,6 +68,7 @@ pitch = 10
 position = Vector2(1332, -486)
 script = ExtResource("1_7gloj")
 pitch = 11
+inverted = true
 
 [node name="Marker2D9" type="Marker2D" parent="."]
 position = Vector2(1394, 140)

@@ -75,6 +75,7 @@ size = Vector2(67.5, 181.5)
 script = ExtResource("1_v6fml")
 fail_sound = ExtResource("3_3li8b")
 time_window_in_beats = 0.5
+inverted_landing_y_adjustment = 200.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(24, 100)
