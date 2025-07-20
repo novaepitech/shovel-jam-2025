@@ -71,8 +71,11 @@ func _physics_process(delta: float):
 			move_and_slide()
 
 func _process_state_initial_run():
-	velocity = Vector2(INITIAL_RUN_SPEED, 0)
-	move_and_slide()
+	if not _move_tween or not _move_tween.is_running():
+		_move_tween = create_tween()
+		var target_pos = global_position + Vector2(INITIAL_RUN_SPEED * initial_walk_timer.wait_time, 0)  # Calculate distance based on timer
+		_move_tween.tween_property(self, "global_position", target_pos, initial_walk_timer.wait_time)
+		_move_tween.tween_callback(func(): velocity = Vector2.ZERO)
 
 func _process_state_idle_on_note():
 	var current_note = _note_sequence[_current_note_index]
