@@ -27,17 +27,19 @@ enum NoteRhythmicValue {
 # Double-croche -> Petit pas
 static func get_required_action_for_type(note_type: NoteRhythmicValue) -> GameActions.Type:
 	match note_type:
-		NoteRhythmicValue.BLANCHE:
+		NoteData.NoteRhythmicValue.BLANCHE:
 			return GameActions.Type.SAUT
-		NoteRhythmicValue.NOIRE:
+		NoteData.NoteRhythmicValue.NOIRE:
 			return GameActions.Type.PAS
-		NoteRhythmicValue.CROCHE:
+		NoteData.NoteRhythmicValue.CROCHE:
 			# D'après le GDD, "Alterner Petits Pas" est pour les double-croches.
 			# Nous assignons donc "Pas" à la croche.
 			return GameActions.Type.PAS
-		NoteRhythmicValue.DOUBLE_CROCHE:
+		NoteData.NoteRhythmicValue.DOUBLE_CROCHE:
 			# Et "Petit Pas" à la double-croche, comme sur la diapo 3.
 			return GameActions.Type.PETIT_PAS
+		NoteData.NoteRhythmicValue.SILENCE:
+			return GameActions.Type.NONE  # Pas d'action requise pour un silence (optionnel, ajustez si besoin).
 		_:
 			return GameActions.Type.PAS
 

@@ -22,7 +22,8 @@ var required_action: GameActions.Type
 @export var texture_blanche: Texture2D
 @export var texture_noire: Texture2D
 @export var texture_croche: Texture2D
-@export var texture_double_croche: Texture2D # La nouvelle texture pour la double-croche.
+@export var texture_double_croche: Texture2D
+@export var texture_silence: Texture2D
 
 # Variables pour les animations visuelles.
 var original_position: Vector2
@@ -53,6 +54,8 @@ func _ready():
 		NoteData.NoteRhythmicValue.TRIOLET_DE_CROCHES:
 			# Pour l'instant, un triolet ressemble visuellement à une croche.
 			sprite.texture = texture_croche
+		NoteData.NoteRhythmicValue.SILENCE:
+			sprite.texture = texture_silence
 		_:
 			# Fallback en cas d'erreur ou de type non reconnu.
 			printerr("Note type not recognized or texture not set: ", NoteData.NoteRhythmicValue.keys()[rhythmic_value])
@@ -66,17 +69,28 @@ func _ready():
 		position.y += INVERT_Y_OFFSET
 
 
-## Déclenche une petite animation de "saut" de la note.
+## Déclenche l'animation appropriée en fonction du type de note.
 func bump():
 	if is_bumping:
 		return
 	is_bumping = true
-	var tween = create_tween()
-	tween.set_ease(Tween.EASE_OUT)
-	tween.set_trans(Tween.TRANS_BACK)
-	tween.tween_property(sprite, "position", original_position + Vector2(0, 8), 0.1)
-	tween.tween_property(sprite, "position", original_position, 0.2)
-	tween.tween_callback(func(): is_bumping = false)
+
+	if rhythmic_value == NoteData.NoteRhythmicValue.SILENCE:
+		# Pour SILENCE: Animation de fondu (fade-out) au lieu du bump.
+		# L'opacité passe de 1.0 à 0.0 sur 0.3s pour un effet subtil et "silencieux".
+		var tween = create_tween()
+		tween.set_ease(Tween.EASE_OUT)
+		tween.set_trans(Tween.TRANS_SINE)
+		tween.tween_property(sprite, "modulate:a", 0.0, 0.3)
+		tween.tween_callback(func(): is_bumping = false)
+	else:
+		# Animation bump standard pour les autres notes.
+		var tween = create_tween()
+		tween.set_ease(Tween.EASE_OUT)
+		tween.set_trans(Tween.TRANS_BACK)
+		tween.tween_property(sprite, "position", original_position + Vector2(0, 8), 0.1)
+		tween.tween_property(sprite, "position", original_position, 0.2)
+		tween.tween_callback(func(): is_bumping = false)
 
 
 ## Fonction appelée par le joueur lorsqu'il saute sur cette note.

@@ -80,11 +80,20 @@ func _physics_process(delta: float):
 
 	# Check for missed windows in all relevant states
 	if _state in [State.INITIAL_RUN, State.MOVING_TO_NOTE, State.IDLE_ON_NOTE]:
-		for p in pending_notes:
+		# Iterate in reverse to safely remove items without index issues
+		for i in range(pending_notes.size() - 1, -1, -1):
+			var p = pending_notes[i]
 			if RhythmConductor.song_position_in_beats > p.upper_bound:
-				print("!!! MOVEMENT FAILED !!! Missed input window for note at beat %.2f" % p.target_beat)
-				_fail_movement()
-				break
+				if p.required_action != GameActions.Type.NONE:
+					# Normal note: Missed input window -> fail
+					print("!!! MOVEMENT FAILED !!! Missed input window for note at beat %.2f" % p.target_beat)
+					_fail_movement()
+					break  # Fail one at a time (adjust if multiple fails needed)
+				else:
+					# SILENCE note: No input during window -> success! Remove from pending and let tween continue.
+					print("SILENCE validated: No input during window for note at beat %.2f" % p.target_beat)
+					pending_notes.remove_at(i)
+					# No further action needed; movement will complete automatically.
 
 func _process_state_initial_run():
 	if not _move_tween or not _move_tween.is_running():
