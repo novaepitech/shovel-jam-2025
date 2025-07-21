@@ -1,12 +1,22 @@
-[gd_scene load_steps=9 format=3 uid="uid://2lqfsharfeg4"]
+[gd_scene load_steps=19 format=3 uid="uid://2lqfsharfeg4"]
 
 [ext_resource type="Script" uid="uid://kjuaeqp622km" path="res://scripts/main.gd" id="1_elqb8"]
 [ext_resource type="PackedScene" uid="uid://dsh5yd6w0gkr6" path="res://scenes/Note.tscn" id="2_rarhs"]
 [ext_resource type="PackedScene" uid="uid://cxs7rtrtk8rcb" path="res://scenes/Player.tscn" id="2_rvslj"]
 [ext_resource type="PackedScene" uid="uid://ulc1c25ef1wh" path="res://scenes/level_1_data.tscn" id="3_vcsgt"]
-[ext_resource type="Texture2D" uid="uid://beqiequ522omj" path="res://assets/background.png" id="4_vcsgt"]
 [ext_resource type="PackedScene" uid="uid://deadsjgeo7chk" path="res://scenes/hud.tscn" id="5_nxtc6"]
 [ext_resource type="Texture2D" uid="uid://mhvcccnis7bn" path="res://assets/lines.png" id="6_c01mt"]
+[ext_resource type="Texture2D" uid="uid://b56j5fc4pyip4" path="res://assets/sprites/background/static background.png" id="7_lhr70"]
+[ext_resource type="Texture2D" uid="uid://c6u0n3wqt8hd5" path="res://assets/sprites/background/far layer.png" id="8_wp0k4"]
+[ext_resource type="Texture2D" uid="uid://cof2gicx5k3k4" path="res://assets/sprites/background/sax.png" id="9_bjd11"]
+[ext_resource type="Texture2D" uid="uid://cdi1kjd6403di" path="res://assets/sprites/background/flower.png" id="10_qmy6f"]
+[ext_resource type="Texture2D" uid="uid://b0d1d06sl5tf3" path="res://assets/sprites/background/trumpet.png" id="11_ft6cd"]
+[ext_resource type="Texture2D" uid="uid://c7uurnb0ojdo0" path="res://assets/sprites/background/close layer.png" id="12_bb450"]
+[ext_resource type="Texture2D" uid="uid://clyq0erhwnjm0" path="res://assets/sprites/background/basson.png" id="13_nfivy"]
+[ext_resource type="Texture2D" uid="uid://bb4bfv8heat0f" path="res://assets/sprites/background/guitar.png" id="14_1nqs0"]
+[ext_resource type="Texture2D" uid="uid://ks5rcbd14ej0" path="res://assets/sprites/background/drums.png" id="15_1iba3"]
+[ext_resource type="Texture2D" uid="uid://dg7elox8e2sy3" path="res://assets/sprites/background/drop light.png" id="16_yxlcp"]
+[ext_resource type="Texture2D" uid="uid://d0ejljxgaass2" path="res://assets/sprites/background/darker overlay.png" id="17_ebg2g"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vcsgt"]
 size = Vector2(2417, 489)
@@ -38,14 +48,6 @@ position = Vector2(-1190, 437)
 position = Vector2(424.5, 0)
 shape = SubResource("RectangleShape2D_vcsgt")
 
-[node name="Background" type="TextureRect" parent="."]
-z_index = -1
-offset_left = -2181.0
-offset_top = -743.0
-offset_right = 3399.0
-offset_bottom = 3810.0
-texture = ExtResource("4_vcsgt")
-
 [node name="WorldContainer" type="Node2D" parent="."]
 position = Vector2(-231, 0)
 
@@ -60,3 +62,95 @@ texture = ExtResource("6_c01mt")
 stretch_mode = 1
 
 [node name="HUD" parent="." instance=ExtResource("5_nxtc6")]
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+scale = Vector2(0.4, 0.4)
+transform = Transform2D(0.4, 0, 0, 0.4, 0, 0)
+
+[node name="Static Background" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(1, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Static Background"]
+texture = ExtResource("7_lhr70")
+centered = false
+
+[node name="Far Layer" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.5, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Far Layer"]
+texture = ExtResource("8_wp0k4")
+centered = false
+
+[node name="Sax" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.5, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Sax"]
+texture = ExtResource("9_bjd11")
+centered = false
+
+[node name="Flowers" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.5, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Flowers"]
+texture = ExtResource("10_qmy6f")
+centered = false
+
+[node name="Trumpet" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.5, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Trumpet"]
+texture = ExtResource("11_ft6cd")
+centered = false
+
+[node name="Close Layer" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(1, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Close Layer"]
+texture = ExtResource("12_bb450")
+centered = false
+
+[node name="Basson" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(1, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Basson"]
+texture = ExtResource("13_nfivy")
+centered = false
+
+[node name="Guitar" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(1, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Guitar"]
+texture = ExtResource("14_1nqs0")
+centered = false
+
+[node name="Drums" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(1, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Drums"]
+texture = ExtResource("15_1iba3")
+centered = false
+
+[node name="Drop lights" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(1, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Drop lights"]
+texture = ExtResource("16_yxlcp")
+centered = false
+
+[node name="Dark Overlay" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(1, 0)
+motion_mirroring = Vector2(7680, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Dark Overlay"]
+texture = ExtResource("17_ebg2g")
+centered = false
