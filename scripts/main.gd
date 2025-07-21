@@ -12,6 +12,7 @@ extends Node2D
 @onready var world_container: Node2D = $WorldContainer
 @onready var staff_lines: TextureRect = $WorldContainer/StaffLines
 @onready var player: Player = $Player
+@onready var music_player: AudioStreamPlayer = $MusicPlayer
 
 var level_notes: Array[Note] = []
 
@@ -30,6 +31,8 @@ func _ready() -> void:
 		printerr("Level build completed, but no notes were found in the level data.")
 
 func _on_player_failed():
+	music_player.stop()
+
 	# Use the global GameState to manage lives.
 	GameState.decrease_life()
 	var remaining_lives = GameState.get_current_lives()
