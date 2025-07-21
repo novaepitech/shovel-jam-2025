@@ -4,6 +4,7 @@ extends Marker2D
 
 enum NoteRhythmicValue {
 	SILENCE,
+	DEMI_SILENCE,
 	BLANCHE,       # 2 temps
 	NOIRE,         # 1 temps
 	CROCHE,        # 0.5 temps
@@ -35,7 +36,9 @@ static func get_required_action_for_type(note_type: NoteRhythmicValue) -> GameAc
 			# Et "Petit Pas" à la double-croche, comme sur la diapo 3.
 			return GameActions.Type.PETIT_PAS
 		NoteData.NoteRhythmicValue.SILENCE:
-			return GameActions.Type.NONE  # Pas d'action requise pour un silence (optionnel, ajustez si besoin).
+			return GameActions.Type.NONE
+		NoteData.NoteRhythmicValue.DEMI_SILENCE:
+			return GameActions.Type.NONE
 		_:
 			return GameActions.Type.PAS
 

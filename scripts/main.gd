@@ -106,4 +106,5 @@ func get_note_duration_in_beats(note_type: NoteData.NoteRhythmicValue) -> float:
 		NoteData.NoteRhythmicValue.DOUBLE_CROCHE: return 0.25
 		NoteData.NoteRhythmicValue.TRIOLET_DE_CROCHES: return 1.0 / 3.0
 		NoteData.NoteRhythmicValue.SILENCE: return 1.0
+		NoteData.NoteRhythmicValue.DEMI_SILENCE: return 0.5
 	return 1.0

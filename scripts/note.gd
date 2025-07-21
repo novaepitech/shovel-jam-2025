@@ -24,6 +24,7 @@ var required_action: GameActions.Type
 @export var texture_croche: Texture2D
 @export var texture_double_croche: Texture2D
 @export var texture_silence: Texture2D
+@export var texture_demi_silence: Texture2D
 
 # Variables pour les animations visuelles.
 var original_position: Vector2
@@ -56,6 +57,8 @@ func _ready():
 			sprite.texture = texture_croche
 		NoteData.NoteRhythmicValue.SILENCE:
 			sprite.texture = texture_silence
+		NoteData.NoteRhythmicValue.DEMI_SILENCE:
+			sprite.texture = texture_demi_silence
 		_:
 			# Fallback en cas d'erreur ou de type non reconnu.
 			printerr("Note type not recognized or texture not set: ", NoteData.NoteRhythmicValue.keys()[rhythmic_value])
@@ -75,8 +78,8 @@ func bump():
 		return
 	is_bumping = true
 
-	if rhythmic_value == NoteData.NoteRhythmicValue.SILENCE:
-		# Pour SILENCE: Animation de fondu (fade-out) au lieu du bump.
+	if rhythmic_value in [NoteData.NoteRhythmicValue.SILENCE, NoteData.NoteRhythmicValue.DEMI_SILENCE]:
+		# Pour SILENCE et DEMI_SILENCE: Animation de fondu (fade-out) au lieu du bump.
 		# L'opacité passe de 1.0 à 0.0 sur 0.3s pour un effet subtil et "silencieux".
 		var tween = create_tween()
 		tween.set_ease(Tween.EASE_OUT)
