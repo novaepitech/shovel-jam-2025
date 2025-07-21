@@ -2,8 +2,6 @@
 class_name NoteData
 extends Marker2D
 
-# Voici notre NOUVELLE énumération, propre, correcte et complète.
-# L'ordre est maintenant logique.
 enum NoteRhythmicValue {
 	SILENCE,
 	BLANCHE,       # 2 temps
@@ -13,8 +11,6 @@ enum NoteRhythmicValue {
 	TRIOLET_DE_CROCHES
 }
 
-# La variable exportée utilise la nouvelle énumération. Les nouvelles notes
-# que vous placerez utiliseront ce nouveau système directement.
 @export var type: NoteRhythmicValue = NoteRhythmicValue.NOIRE
 
 @export var pitch: MusicTheory.Pitch = MusicTheory.Pitch.SOL_LINE2:

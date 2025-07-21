@@ -130,7 +130,7 @@ func _input(event: InputEvent) -> void:
 		for p in pending_notes:
 			if current_beat >= p.lower_bound and current_beat <= p.upper_bound:
 				any_in_window = true
-				if performed_action == p.required_action:
+				if performed_action == p.required_action or (performed_action == GameActions.Type.PAS and p.required_action == GameActions.Type.PETIT_PAS):
 					candidates.append(p)
 
 		if not candidates.is_empty():
