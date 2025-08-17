@@ -6,9 +6,6 @@ extends Node2D
 @export var initial_scroll_speed: float = 400.0
 @export var lead_in_beats: float = 4.0
 
-# This line is removed. The state is now managed globally.
-# @export var player_lives: int = 3
-
 @onready var world_container: Node2D = $WorldContainer
 @onready var staff_lines: TextureRect = $WorldContainer/StaffLines
 @onready var player: Player = $Player
@@ -20,6 +17,7 @@ var level_notes: Array[Note] = []
 func _ready() -> void:
 	SignalManager.speed_change_requested.connect(_on_speed_change_requested)
 	player.player_failed.connect(_on_player_failed)
+	player.level_finished.connect(_on_level_finished)
 
 	build_level_layout()
 
@@ -33,7 +31,6 @@ func _ready() -> void:
 func _on_player_failed():
 	music_player.stop()
 
-	# Use the global GameState to manage lives.
 	GameState.decrease_life()
 	var remaining_lives = GameState.get_current_lives()
 	print("Player failed. Lives remaining: %d" % remaining_lives)
@@ -42,10 +39,13 @@ func _on_player_failed():
 		print("GAME OVER. No lives left.")
 		get_tree().change_scene_to_file("res://scenes/game_over_screen.tscn")
 	else:
-		# Reload the level to try again. Because GameState is an autoload,
-		# its state will persist across this scene reload.
 		await get_tree().create_timer(1.5).timeout
 		get_tree().reload_current_scene()
+
+func _on_level_finished():
+	music_player.stop()
+	print("LEVEL COMPLETE! Transitioning to win screen.")
+	get_tree().change_scene_to_file("res://scenes/win_screen.tscn")
 
 func _on_speed_change_requested(new_speed: float):
 	print("Visual scroll speed changed to %f" % new_speed)
