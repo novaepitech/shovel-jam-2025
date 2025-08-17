@@ -1,7 +1,9 @@
 class_name Note
 extends Node2D
 
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var visuals: Node2D = $Visuals
+@onready var sprite: Sprite2D = $Visuals/Sprite2D
+@onready var hint_sprite: Sprite2D = $Visuals/HintSprite
 
 # Propriétés rythmiques et de positionnement de la note.
 var target_beat: float = 0.0
@@ -26,6 +28,11 @@ var required_action: GameActions.Type
 @export var texture_silence: Texture2D
 @export var texture_demi_silence: Texture2D
 
+# -- Textures des indices de touches --
+@export var texture_hint_saut: Texture2D
+@export var texture_hint_pas: Texture2D
+@export var texture_hint_petit_pas: Texture2D
+
 # Variables pour les animations visuelles.
 var original_position: Vector2
 var is_bumping = false
@@ -35,12 +42,24 @@ const INVERT_Y_OFFSET: float = 340.0
 
 
 func _ready():
-	# On sauvegarde la position initiale du sprite pour l'animation "bump".
-	original_position = sprite.position
+	# On sauvegarde la position initiale du groupe de sprites pour l'animation "bump".
+	original_position = visuals.position
 
 	# On demande à notre classe statique NoteData quelle action est nécessaire pour cette valeur rythmique.
 	# La logique est maintenant centralisée et claire.
 	required_action = NoteData.get_required_action_for_type(rhythmic_value)
+
+	# On met à jour le sprite de l'indice de touche.
+	match required_action:
+		GameActions.Type.SAUT:
+			hint_sprite.texture = texture_hint_saut
+		GameActions.Type.PAS:
+			hint_sprite.texture = texture_hint_pas
+		GameActions.Type.PETIT_PAS:
+			hint_sprite.texture = texture_hint_petit_pas
+		_:
+			# Pas d'indice pour les silences ou autres types de notes sans action.
+			hint_sprite.visible = false
 
 	# On sélectionne la bonne texture en fonction de la valeur rythmique de la note.
 	match rhythmic_value:
@@ -87,12 +106,12 @@ func bump():
 		tween.tween_property(sprite, "modulate:a", 0.0, 0.3)
 		tween.tween_callback(func(): is_bumping = false)
 	else:
-		# Animation bump standard pour les autres notes.
+		# Animation bump standard pour les autres notes, appliquée au conteneur 'Visuals'.
 		var tween = create_tween()
 		tween.set_ease(Tween.EASE_OUT)
 		tween.set_trans(Tween.TRANS_BACK)
-		tween.tween_property(sprite, "position", original_position + Vector2(0, 8), 0.1)
-		tween.tween_property(sprite, "position", original_position, 0.2)
+		tween.tween_property(visuals, "position", original_position + Vector2(0, 8), 0.1)
+		tween.tween_property(visuals, "position", original_position, 0.2)
 		tween.tween_callback(func(): is_bumping = false)
 
 

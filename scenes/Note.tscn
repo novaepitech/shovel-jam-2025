@@ -1,24 +1,37 @@
-[gd_scene load_steps=8 format=3 uid="uid://dsh5yd6w0gkr6"]
+[gd_scene load_steps=11 format=3 uid="uid://dsh5yd6w0gkr6"]
 
 [ext_resource type="Script" uid="uid://cogfrqy4861rh" path="res://scripts/note.gd" id="1_tqwf5"]
-[ext_resource type="Texture2D" uid="uid://dfy2k5y71cwiw" path="res://assets/sprites/noire.png" id="2_b5sp0"]
-[ext_resource type="Texture2D" uid="uid://dbborrwh16g6o" path="res://assets/sprites/croche.png" id="2_tqwf5"]
 [ext_resource type="Texture2D" uid="uid://x0m1kx3ib6jm" path="res://assets/sprites/blanche.png" id="2_vrulo"]
+[ext_resource type="Texture2D" uid="uid://dfy2k5y71cwiw" path="res://assets/sprites/noire.png" id="3_b5sp0"]
+[ext_resource type="Texture2D" uid="uid://dbborrwh16g6o" path="res://assets/sprites/croche.png" id="4_tqwf5"]
 [ext_resource type="Texture2D" uid="uid://bhi4sf2an3bsm" path="res://assets/sprites/double_croche.png" id="5_bnwil"]
 [ext_resource type="Texture2D" uid="uid://b7qjw2jncrmo4" path="res://assets/sprites/silence.png" id="6_bnwil"]
 [ext_resource type="Texture2D" uid="uid://x6ke706maasj" path="res://assets/sprites/demi_silence.png" id="7_75v05"]
+[ext_resource type="Texture2D" uid="uid://yh7ovevew4bm" path="res://assets/sprites/hints/up_arrow.png" id="8_u6yhj"]
+[ext_resource type="Texture2D" uid="uid://dhi4pc6f1btxl" path="res://assets/sprites/hints/right_arrow.png" id="9_b0nkk"]
+[ext_resource type="Texture2D" uid="uid://cg3uotpy26xgv" path="res://assets/sprites/hints/left-right_arrows.png" id="10_c0hfl"]
 
 [node name="Note" type="Node2D" groups=["notes"]]
 z_index = 1
 script = ExtResource("1_tqwf5")
 texture_blanche = ExtResource("2_vrulo")
-texture_noire = ExtResource("2_b5sp0")
-texture_croche = ExtResource("2_tqwf5")
+texture_noire = ExtResource("3_b5sp0")
+texture_croche = ExtResource("4_tqwf5")
 texture_double_croche = ExtResource("5_bnwil")
 texture_silence = ExtResource("6_bnwil")
 texture_demi_silence = ExtResource("7_75v05")
+texture_hint_saut = ExtResource("8_u6yhj")
+texture_hint_pas = ExtResource("9_b0nkk")
+texture_hint_petit_pas = ExtResource("10_c0hfl")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Visuals" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Visuals"]
 modulate = Color(0, 0, 0, 1)
 scale = Vector2(0.3, 0.3)
-texture = ExtResource("2_b5sp0")
+texture = ExtResource("3_b5sp0")
+
+[node name="HintSprite" type="Sprite2D" parent="Visuals"]
+z_index = 1
+position = Vector2(0, 170)
+scale = Vector2(0.08, 0.08)

@@ -17,7 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://ks5rcbd14ej0" path="res://assets/sprites/background/drums.png" id="15_1iba3"]
 [ext_resource type="Texture2D" uid="uid://dg7elox8e2sy3" path="res://assets/sprites/background/drop light.png" id="16_yxlcp"]
 [ext_resource type="Texture2D" uid="uid://d0ejljxgaass2" path="res://assets/sprites/background/darker overlay.png" id="17_ebg2g"]
-[ext_resource type="AudioStream" uid="uid://dmnoc407rxbq8" path="res://assets/musics/mozart-music.mp3" id="18_bb450"]
+[ext_resource type="AudioStream" uid="uid://eij8r36gf6nd" path="res://assets/musics/mozart-music SPED TO PERFECTION SECOND TRY.mp3" id="18_bb450"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vcsgt"]
 size = Vector2(2417, 489)
