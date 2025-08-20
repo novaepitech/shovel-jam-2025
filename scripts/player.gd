@@ -124,19 +124,19 @@ func _input(event: InputEvent) -> void:
 					candidates.append(p)
 
 		if not candidates.is_empty():
-			# --- FIX APPLIED ---
-			# The original code searched for the "closest" note, which caused issues with
-			# overlapping windows. The correct logic is to always hit the EARLIEST note
-			# for which the input is valid. Since 'pending_notes' is chronological, the
-			# first valid candidate in our 'candidates' list is the correct one.
+			# The correct logic is to always hit the EARLIEST valid note.
+			# 'pending_notes' is chronological; the first candidate is correct.
 			var note_to_hit = candidates[0]
 
 			print("  > Input '%s' CORRECT and SYNCHRONIZED! (Current Beat: %.2f, Window: [%.2f, %.2f])" % [GameActions.Type.keys()[performed_action], current_beat, note_to_hit.lower_bound, note_to_hit.upper_bound])
 			pending_notes.erase(note_to_hit)
-			# --- END OF FIX ---
 		else:
 			if any_in_window:
 				print("  > Input '%s' WRONG or Timing INCORRECT!" % GameActions.Type.keys()[performed_action])
+				_fail_movement()
+			else:
+				# NEW: Punish inputs performed when no timing window is active (anti-spam).
+				print("  > Input '%s' OUTSIDE ANY WINDOW (spam)!" % GameActions.Type.keys()[performed_action])
 				_fail_movement()
 
 #-----------------------------------------------------------------------------
@@ -178,7 +178,6 @@ func _land_successfully():
 
 	# MODIFICATION: Instead of going idle, immediately start moving to the next note.
 	_start_automatic_move_to_next_note()
-
 
 func _fail_movement():
 	print("!!! MOVEMENT FAILED !!! Player did not provide correct input.")
