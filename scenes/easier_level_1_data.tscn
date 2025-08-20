@@ -1,0 +1,608 @@
+[gd_scene load_steps=2 format=3 uid="uid://crde6t7jjoauj"]
+
+[ext_resource type="Script" uid="uid://tw3xsvv3daw7" path="res://scripts/level_design/note_data.gd" id="1_7gloj"]
+
+[node name="Level1_Data" type="Node2D"]
+
+[node name="Note1" type="Marker2D" parent="."]
+position = Vector2(108, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note2" type="Marker2D" parent="."]
+position = Vector2(210, -92)
+script = ExtResource("1_7gloj")
+
+[node name="Note3" type="Marker2D" parent="."]
+position = Vector2(525, -320)
+script = ExtResource("1_7gloj")
+type = 1
+pitch = 8
+
+[node name="Note4" type="Marker2D" parent="."]
+position = Vector2(679, -320)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 8
+
+[node name="Note5" type="Marker2D" parent="."]
+position = Vector2(810, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note6" type="Marker2D" parent="."]
+position = Vector2(1061, -204)
+script = ExtResource("1_7gloj")
+type = 1
+pitch = 6
+
+[node name="Note7" type="Marker2D" parent="."]
+position = Vector2(1206, -432)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 10
+
+[node name="Note8" type="Marker2D" parent="."]
+position = Vector2(1343, -320)
+script = ExtResource("1_7gloj")
+pitch = 8
+
+[node name="Note9" type="Marker2D" parent="."]
+position = Vector2(1562, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note10" type="Marker2D" parent="."]
+position = Vector2(1670, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note11" type="Marker2D" parent="."]
+position = Vector2(1872, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note12" type="Marker2D" parent="."]
+position = Vector2(1967, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note13" type="Marker2D" parent="."]
+position = Vector2(2064, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note14" type="Marker2D" parent="."]
+position = Vector2(2289, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note15" type="Marker2D" parent="."]
+position = Vector2(2386, -92)
+script = ExtResource("1_7gloj")
+
+[node name="Note16" type="Marker2D" parent="."]
+position = Vector2(2576, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note17" type="Marker2D" parent="."]
+position = Vector2(2681, -150)
+script = ExtResource("1_7gloj")
+pitch = 5
+
+[node name="Note18" type="Marker2D" parent="."]
+position = Vector2(2845, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note19" type="Marker2D" parent="."]
+position = Vector2(2961, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note20" type="Marker2D" parent="."]
+position = Vector2(3141, -92)
+script = ExtResource("1_7gloj")
+type = 4
+
+[node name="Note21" type="Marker2D" parent="."]
+position = Vector2(3253, -34)
+script = ExtResource("1_7gloj")
+pitch = 3
+
+[node name="Note22" type="Marker2D" parent="."]
+position = Vector2(3388, 24)
+script = ExtResource("1_7gloj")
+pitch = 2
+
+[node name="Note23" type="Marker2D" parent="."]
+position = Vector2(3596, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note24" type="Marker2D" parent="."]
+position = Vector2(3699, -92)
+script = ExtResource("1_7gloj")
+
+[node name="Note25" type="Marker2D" parent="."]
+position = Vector2(4014, -150)
+script = ExtResource("1_7gloj")
+type = 1
+pitch = 5
+
+[node name="Note26" type="Marker2D" parent="."]
+position = Vector2(4168, -320)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 8
+
+[node name="Note27" type="Marker2D" parent="."]
+position = Vector2(4299, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note28" type="Marker2D" parent="."]
+position = Vector2(4550, -204)
+script = ExtResource("1_7gloj")
+type = 1
+pitch = 6
+
+[node name="Note29" type="Marker2D" parent="."]
+position = Vector2(4695, -432)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 10
+
+[node name="Note30" type="Marker2D" parent="."]
+position = Vector2(4832, -320)
+script = ExtResource("1_7gloj")
+pitch = 8
+
+[node name="Note31" type="Marker2D" parent="."]
+position = Vector2(5051, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note32" type="Marker2D" parent="."]
+position = Vector2(5159, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note33" type="Marker2D" parent="."]
+position = Vector2(5361, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note34" type="Marker2D" parent="."]
+position = Vector2(5456, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note35" type="Marker2D" parent="."]
+position = Vector2(5553, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note36" type="Marker2D" parent="."]
+position = Vector2(5778, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note37" type="Marker2D" parent="."]
+position = Vector2(5875, -92)
+script = ExtResource("1_7gloj")
+
+[node name="Note38" type="Marker2D" parent="."]
+position = Vector2(6065, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note39" type="Marker2D" parent="."]
+position = Vector2(6170, -150)
+script = ExtResource("1_7gloj")
+pitch = 5
+
+[node name="Note40" type="Marker2D" parent="."]
+position = Vector2(6334, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note41" type="Marker2D" parent="."]
+position = Vector2(6450, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note42" type="Marker2D" parent="."]
+position = Vector2(6630, -92)
+script = ExtResource("1_7gloj")
+type = 4
+
+[node name="Note43" type="Marker2D" parent="."]
+position = Vector2(6742, -34)
+script = ExtResource("1_7gloj")
+pitch = 3
+
+[node name="Note44" type="Marker2D" parent="."]
+position = Vector2(6877, 24)
+script = ExtResource("1_7gloj")
+pitch = 2
+
+[node name="Note45" type="Marker2D" parent="."]
+position = Vector2(7449, 24)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 2
+
+[node name="Note46" type="Marker2D" parent="."]
+position = Vector2(7525, -34)
+script = ExtResource("1_7gloj")
+pitch = 3
+
+[node name="Note47" type="Marker2D" parent="."]
+position = Vector2(7689, -92)
+script = ExtResource("1_7gloj")
+type = 4
+
+[node name="Note48" type="Marker2D" parent="."]
+position = Vector2(7756, -150)
+script = ExtResource("1_7gloj")
+pitch = 5
+
+[node name="Note49" type="Marker2D" parent="."]
+position = Vector2(7891, 78)
+script = ExtResource("1_7gloj")
+pitch = 1
+
+[node name="Note50" type="Marker2D" parent="."]
+position = Vector2(7958, 140)
+script = ExtResource("1_7gloj")
+type = 1
+pitch = 0
+
+[node name="Note51" type="Marker2D" parent="."]
+position = Vector2(8042, 24)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 2
+
+[node name="Note52" type="Marker2D" parent="."]
+position = Vector2(8137, -34)
+script = ExtResource("1_7gloj")
+pitch = 3
+
+[node name="Note53" type="Marker2D" parent="."]
+position = Vector2(8337, -92)
+script = ExtResource("1_7gloj")
+type = 4
+
+[node name="Note54" type="Marker2D" parent="."]
+position = Vector2(8409, -150)
+script = ExtResource("1_7gloj")
+pitch = 5
+
+[node name="Note55" type="Marker2D" parent="."]
+position = Vector2(8565, 78)
+script = ExtResource("1_7gloj")
+pitch = 1
+
+[node name="Note56" type="Marker2D" parent="."]
+position = Vector2(8670, -262)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 7
+
+[node name="Note57" type="Marker2D" parent="."]
+position = Vector2(8778, -320)
+script = ExtResource("1_7gloj")
+pitch = 8
+
+[node name="Note58" type="Marker2D" parent="."]
+position = Vector2(9033, -374)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 9
+
+[node name="Note59" type="Marker2D" parent="."]
+position = Vector2(9162, -432)
+script = ExtResource("1_7gloj")
+pitch = 10
+
+[node name="Note60" type="Marker2D" parent="."]
+position = Vector2(9372, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note61" type="Marker2D" parent="."]
+position = Vector2(9498, 24)
+script = ExtResource("1_7gloj")
+pitch = 2
+
+[node name="Note62" type="Marker2D" parent="."]
+position = Vector2(9697, -320)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 8
+
+[node name="Note63" type="Marker2D" parent="."]
+position = Vector2(9826, -374)
+script = ExtResource("1_7gloj")
+pitch = 9
+
+[node name="Note64" type="Marker2D" parent="."]
+position = Vector2(10005, -432)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 10
+
+[node name="Note65" type="Marker2D" parent="."]
+position = Vector2(10072, -320)
+script = ExtResource("1_7gloj")
+pitch = 8
+
+[node name="Note66" type="Marker2D" parent="."]
+position = Vector2(10116, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note67" type="Marker2D" parent="."]
+position = Vector2(10209, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note68" type="Marker2D" parent="."]
+position = Vector2(10314, -92)
+script = ExtResource("1_7gloj")
+
+[node name="Note69" type="Marker2D" parent="."]
+position = Vector2(10453, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note70" type="Marker2D" parent="."]
+position = Vector2(10579, -320)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 8
+
+[node name="Note71" type="Marker2D" parent="."]
+position = Vector2(10693, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note72" type="Marker2D" parent="."]
+position = Vector2(10800, -374)
+script = ExtResource("1_7gloj")
+pitch = 9
+
+[node name="Note73" type="Marker2D" parent="."]
+position = Vector2(10899, -34)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 3
+
+[node name="Note74" type="Marker2D" parent="."]
+position = Vector2(10977, 78)
+script = ExtResource("1_7gloj")
+pitch = 1
+
+[node name="Note75" type="Marker2D" parent="."]
+position = Vector2(11125, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note76" type="Marker2D" parent="."]
+position = Vector2(11230, -92)
+script = ExtResource("1_7gloj")
+
+[node name="Note77" type="Marker2D" parent="."]
+position = Vector2(11433, -92)
+script = ExtResource("1_7gloj")
+type = 4
+
+[node name="Note78" type="Marker2D" parent="."]
+position = Vector2(11534, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note79" type="Marker2D" parent="."]
+position = Vector2(11742, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note80" type="Marker2D" parent="."]
+position = Vector2(11831, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note81" type="Marker2D" parent="."]
+position = Vector2(11991, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note82" type="Marker2D" parent="."]
+position = Vector2(12067, -92)
+script = ExtResource("1_7gloj")
+
+[node name="Note83" type="Marker2D" parent="."]
+position = Vector2(12231, -92)
+script = ExtResource("1_7gloj")
+type = 4
+
+[node name="Note84" type="Marker2D" parent="."]
+position = Vector2(12332, 24)
+script = ExtResource("1_7gloj")
+pitch = 2
+
+[node name="Note85" type="Marker2D" parent="."]
+position = Vector2(12520, 78)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 1
+
+[node name="Note86" type="Marker2D" parent="."]
+position = Vector2(12619, 140)
+script = ExtResource("1_7gloj")
+pitch = 0
+
+[node name="Note87" type="Marker2D" parent="."]
+position = Vector2(12703, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note88" type="Marker2D" parent="."]
+position = Vector2(12792, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note89" type="Marker2D" parent="."]
+position = Vector2(12885, -150)
+script = ExtResource("1_7gloj")
+pitch = 5
+
+[node name="Note90" type="Marker2D" parent="."]
+position = Vector2(12993, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note91" type="Marker2D" parent="."]
+position = Vector2(13080, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note92" type="Marker2D" parent="."]
+position = Vector2(13158, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note93" type="Marker2D" parent="."]
+position = Vector2(13249, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note94" type="Marker2D" parent="."]
+position = Vector2(13340, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note95" type="Marker2D" parent="."]
+position = Vector2(13509, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note96" type="Marker2D" parent="."]
+position = Vector2(13598, -150)
+script = ExtResource("1_7gloj")
+pitch = 5
+
+[node name="Note97" type="Marker2D" parent="."]
+position = Vector2(13775, -34)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 3
+
+[node name="Note98" type="Marker2D" parent="."]
+position = Vector2(13878, -92)
+script = ExtResource("1_7gloj")
+
+[node name="Note99" type="Marker2D" parent="."]
+position = Vector2(13960, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note100" type="Marker2D" parent="."]
+position = Vector2(14053, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note101" type="Marker2D" parent="."]
+position = Vector2(14131, -92)
+script = ExtResource("1_7gloj")
+type = 4
+
+[node name="Note102" type="Marker2D" parent="."]
+position = Vector2(14205, 24)
+script = ExtResource("1_7gloj")
+pitch = 2
+
+[node name="Note103" type="Marker2D" parent="."]
+position = Vector2(14451, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note104" type="Marker2D" parent="."]
+position = Vector2(14548, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note105" type="Marker2D" parent="."]
+position = Vector2(14660, -150)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 5
+
+[node name="Note106" type="Marker2D" parent="."]
+position = Vector2(14738, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note107" type="Marker2D" parent="."]
+position = Vector2(14833, -262)
+script = ExtResource("1_7gloj")
+pitch = 7
+
+[node name="Note108" type="Marker2D" parent="."]
+position = Vector2(14899, -204)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 6
+
+[node name="Note109" type="Marker2D" parent="."]
+position = Vector2(14990, -150)
+script = ExtResource("1_7gloj")
+pitch = 5
+
+[node name="Note110" type="Marker2D" parent="."]
+position = Vector2(15196, -34)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 3
+
+[node name="Note111" type="Marker2D" parent="."]
+position = Vector2(15306, -204)
+script = ExtResource("1_7gloj")
+pitch = 6
+
+[node name="Note112" type="Marker2D" parent="."]
+position = Vector2(15475, 24)
+script = ExtResource("1_7gloj")
+type = 4
+pitch = 2
+
+[node name="Note113" type="Marker2D" parent="."]
+position = Vector2(15587, -150)
+script = ExtResource("1_7gloj")
+pitch = 5

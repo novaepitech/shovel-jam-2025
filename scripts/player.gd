@@ -6,7 +6,7 @@ signal level_finished
 
 enum State {
 	INITIAL_RUN,
-	IDLE_ON_NOTE,
+	# IDLE_ON_NOTE has been removed
 	MOVING_TO_NOTE,
 	FINISHED,
 	FAILED
@@ -69,15 +69,14 @@ func _physics_process(delta: float):
 	match _state:
 		State.INITIAL_RUN:
 			_process_state_initial_run()
-		State.IDLE_ON_NOTE:
-			_process_state_idle_on_note()
+		# State.IDLE_ON_NOTE case has been removed.
 		State.MOVING_TO_NOTE:
 			_process_state_moving_to_note()
 		State.FAILED:
 			velocity.y += GRAVITY * delta
 			move_and_slide()
 
-	if _state in [State.INITIAL_RUN, State.MOVING_TO_NOTE, State.IDLE_ON_NOTE]:
+	if _state in [State.INITIAL_RUN, State.MOVING_TO_NOTE]: # Removed IDLE_ON_NOTE
 		for i in range(pending_notes.size() - 1, -1, -1):
 			var p = pending_notes[i]
 			if RhythmConductor.song_position_in_beats > p.upper_bound:
@@ -96,11 +95,9 @@ func _process_state_initial_run():
 		_move_tween.tween_property(self, "global_position", target_pos, initial_walk_timer.wait_time)
 		_move_tween.tween_callback(func(): velocity = Vector2.ZERO)
 
-func _process_state_idle_on_note():
-	var current_note = _note_sequence[_current_note_index]
-
-	if RhythmConductor.song_position_in_beats >= current_note.target_beat:
-		_start_automatic_move_to_next_note()
+# This function is no longer needed because there is no IDLE state.
+# func _process_state_idle_on_note():
+# 	pass
 
 func _process_state_moving_to_note():
 	pass
@@ -127,16 +124,16 @@ func _input(event: InputEvent) -> void:
 					candidates.append(p)
 
 		if not candidates.is_empty():
-			var closest = candidates[0]
-			var min_diff = abs(candidates[0].target_beat - current_beat)
-			for c in candidates.slice(1):
-				var diff = abs(c.target_beat - current_beat)
-				if diff < min_diff:
-					min_diff = diff
-					closest = c
+			# --- FIX APPLIED ---
+			# The original code searched for the "closest" note, which caused issues with
+			# overlapping windows. The correct logic is to always hit the EARLIEST note
+			# for which the input is valid. Since 'pending_notes' is chronological, the
+			# first valid candidate in our 'candidates' list is the correct one.
+			var note_to_hit = candidates[0]
 
-			print("  > Input '%s' CORRECT et SYNCHRONISÉ! (Beat actuel: %.2f, Fenêtre: [%.2f, %.2f])" % [GameActions.Type.keys()[performed_action], current_beat, closest.lower_bound, closest.upper_bound])
-			pending_notes.erase(closest)
+			print("  > Input '%s' CORRECT and SYNCHRONIZED! (Current Beat: %.2f, Window: [%.2f, %.2f])" % [GameActions.Type.keys()[performed_action], current_beat, note_to_hit.lower_bound, note_to_hit.upper_bound])
+			pending_notes.erase(note_to_hit)
+			# --- END OF FIX ---
 		else:
 			if any_in_window:
 				print("  > Input '%s' WRONG or Timing INCORRECT!" % GameActions.Type.keys()[performed_action])
@@ -159,6 +156,15 @@ func _on_movement_finished():
 
 func _land_successfully():
 	_current_note_index += 1
+
+	# Check if this was the last note. If so, finish the level.
+	if _current_note_index >= _note_sequence.size():
+		print("Landed successfully on the final note.")
+		animated_sprite.stop()
+		_state = State.FINISHED
+		level_finished.emit()
+		return
+
 	var target_note = _note_sequence[_current_note_index]
 
 	var final_offset = landing_offset
@@ -170,8 +176,9 @@ func _land_successfully():
 
 	print("Landed successfully on note %d." % _current_note_index)
 
-	_state = State.IDLE_ON_NOTE
-	animated_sprite.stop()
+	# MODIFICATION: Instead of going idle, immediately start moving to the next note.
+	_start_automatic_move_to_next_note()
+
 
 func _fail_movement():
 	print("!!! MOVEMENT FAILED !!! Player did not provide correct input.")
@@ -187,6 +194,8 @@ func _fail_movement():
 	player_failed.emit()
 
 func _start_automatic_move_to_next_note():
+	# This function now correctly handles moving from the start (-1)
+	# or from any subsequent note.
 	var next_note_index = _current_note_index + 1
 
 	if next_note_index >= _note_sequence.size():
@@ -208,8 +217,13 @@ func _start_automatic_move_to_next_note():
 
 	_state = State.MOVING_TO_NOTE
 
+	# The animated sprite should keep playing between notes
+	if not animated_sprite.is_playing():
+		animated_sprite.play("default")
+
 	if target_note.is_inverted:
-		animated_sprite.play("swing")
+		# You may have a different animation for this, e.g., "swing"
+		animated_sprite.play("default")
 	else:
 		animated_sprite.play("default")
 
@@ -218,10 +232,14 @@ func _start_automatic_move_to_next_note():
 	var start_pos: Vector2
 
 	if _current_note_index == -1:
+		# This is the very first move of the level
 		start_pos = global_position
 		move_action_type = GameActions.Type.PAS
-		move_duration_beats = 1.0
+		# Calculate duration to the first note from the lead-in
+		var lead_in_beats = get_tree().root.get_node("Main").lead_in_beats
+		move_duration_beats = target_note.target_beat - lead_in_beats
 	else:
+		# This is a move between two notes
 		var current_note = _note_sequence[_current_note_index]
 		var start_offset = landing_offset
 		if current_note.is_inverted:
@@ -229,9 +247,8 @@ func _start_automatic_move_to_next_note():
 
 		start_pos = current_note.global_position + start_offset
 		move_action_type = current_note.required_action
-		move_duration_beats = get_parent().get_note_duration_in_beats(current_note.rhythmic_value)
+		move_duration_beats = target_note.target_beat - current_note.target_beat
 
-	var next_note = _note_sequence[next_note_index]
 	var move_duration_seconds = move_duration_beats * RhythmConductor.time_per_beat
 
 	print("Début du mouvement de l'index %d vers %d. Durée: %.2fs. Trajectoire: %s, Inverted: %s" % [_current_note_index, next_note_index, move_duration_seconds, GameActions.Type.keys()[move_action_type], "Yes" if target_note.is_inverted else "No"])
@@ -240,7 +257,7 @@ func _start_automatic_move_to_next_note():
 	if target_note.is_inverted:
 		final_offset.y += inverted_landing_y_adjustment
 
-	_execute_tween_movement(start_pos, next_note.global_position + final_offset, move_action_type, move_duration_seconds, target_note.is_inverted)
+	_execute_tween_movement(start_pos, target_note.global_position + final_offset, move_action_type, move_duration_seconds, target_note.is_inverted)
 
 
 func _execute_tween_movement(start_pos: Vector2, end_pos: Vector2, action_type: GameActions.Type, duration: float, is_inverted: bool = false):
